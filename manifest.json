@@ -7,5 +7,9 @@
   // Recommended
   "default_locale": "en",
   "description": "A Chrome extension capable of exporting ticker-level transaction data on the "Activity" page.",
-  
+  "content_scripts": [
+    {
+      "matches": ["https://wwws.betterment.com/app/#activity"],
+    }
+  ],  
 }
