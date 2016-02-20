@@ -8,7 +8,16 @@
     {
       "run_at": "document_start",
       "matches": ["https://wwws.betterment.com/app*"],
-      "js": ["libs/pdf.js", "libs/mutation-summary.js", "libs/jquery-2.2.0.min.js", "src/pdf_to_csv.js"]
+      "js": [
+        "libs/patch-worker.js",
+        "libs/pdf.js", 
+        "libs/mutation-summary.js", 
+        "libs/jquery-2.2.0.min.js", 
+        "src/pdf_to_csv.js"
+      ]
     }
+  ],
+  "web_accessible_resources": [
+    "libs/pdf.worker.js"
   ]
 }

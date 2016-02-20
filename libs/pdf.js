@@ -2325,9 +2325,14 @@ PDFJS.disableWorker = (PDFJS.disableWorker === undefined ?
  * third-party frameworks and libraries.
  * @var {string}
  */
-PDFJS.workerSrc = 'libs/pdf.worker.js';
 // PDFJS.workerSrc = (PDFJS.workerSrc === undefined ? null : PDFJS.workerSrc);
-
+/* 
+ * This is a hack to make pdf.worker.js accessible in a chrome extension
+ * content script. PDFJS uses document.currentScript which does not work
+ * in a chrome extension content script.
+ */
+PDFJS.workerSrc = chrome.extension.getURL("libs/pdf.worker.js");
+console.log('PDFJS.workerSrc:'+PDFJS.workerSrc);
 /**
  * Disable range request loading of PDF files. When enabled and if the server
  * supports partial content requests then the PDF will be fetched in chunks.
