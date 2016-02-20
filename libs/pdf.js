@@ -2325,7 +2325,8 @@ PDFJS.disableWorker = (PDFJS.disableWorker === undefined ?
  * third-party frameworks and libraries.
  * @var {string}
  */
-PDFJS.workerSrc = (PDFJS.workerSrc === undefined ? null : PDFJS.workerSrc);
+PDFJS.workerSrc = 'libs/pdf.worker.js';
+// PDFJS.workerSrc = (PDFJS.workerSrc === undefined ? null : PDFJS.workerSrc);
 
 /**
  * Disable range request loading of PDF files. When enabled and if the server

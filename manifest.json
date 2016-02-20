@@ -3,12 +3,12 @@
   "name": "Betterment CSV export",
   "version": "0.01",
 
-  "default_locale": "en",
   "description": "A Chrome extension capable of exporting ticker-level transaction data on the 'Activity' page.",
   "content_scripts": [
     {
-      "matches": ["https://wwws.betterment.com/app/#activity"],
-      "js": ["libs/pdf.js", "libs/jquery-2.2.0.min.js", "src/pdf_to_csv.js"],
+      "run_at": "document_start",
+      "matches": ["https://wwws.betterment.com/app*"],
+      "js": ["libs/pdf.js", "libs/mutation-summary.js", "libs/jquery-2.2.0.min.js", "src/pdf_to_csv.js"]
     }
-  ],  
+  ]
 }
