@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Betterment CSV export",
-  "version": "0.01",
+  "version": "0.0.1",
 
   "description": "A Chrome extension capable of exporting ticker-level transaction data on the 'Activity' page.",
   "content_scripts": [

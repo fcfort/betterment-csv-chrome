@@ -27,37 +27,40 @@ var observer = new MutationSummary({
  * the document.
  */
 this.pdfToTextArray = function(pdfUrl) {
-	return PDFJS.getDocument(pdfUrl).then(function(pdf) {	
+	return PDFJS.getDocument(pdfUrl).then(function(pdf) {
+	 var lineOffset = 0;
+	 var textArray = [[]];
+	 
 	 var pages = [];
 	 for (var i = 0; i < pdf.numPages; i++) {
 	     pages.push(i);
 	 }
 
-	 var lineOffset = 0;
-	 var textArray = [[]];
-
 	 return Promise.all(pages.map(function(pageNumber) {
 	     return pdf.getPage(pageNumber + 1).then(function(page) {	     	
 	         return page.getTextContent().then(function(textContent) {
 	         	 var lastOffset = 0;
-	             return textContent.items.map(function(item) {
-	             	var text = item.str;
-	             	textArray[lineOffset].push(text);
+	             return textContent.items.map(function(item) {	             	
 	                var offset = item.transform[5];
 
 	                if(offset != lastOffset) {
 	                	lineOffset++;
 	                	textArray.push([]);
-	                	text = text + "\r\n";
-	                }	                 
+	                }
+
+	             	textArray[lineOffset].push(item.str);
+
 	                lastOffset = item.transform[5];
-	                return text;
 	             }).join(' ');
 	         });
 	     });
 	 })).then(function(pages) {
 	 	return textArray;
-	     // return pages.join("\r\n");
 	 });
 	});
+}
+
+// https://github.com/fcfort/betterment-pdf-to-csv/blob/master/betterment-pdf-to-csv.py
+this.textToTransactions = function(pdfArray) {
+
 }

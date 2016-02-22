@@ -1,0 +1,26 @@
+{
+  "name": "betterment-csv-chrome",
+  "version": "0.0.1",
+  "description": "A Chrome extension capable of exporting ticker-level transaction data on the 'Activity' page.",
+  "main": "src/pdf_to_csv.js",
+  "scripts": {
+    "test": "tests/pdf_to_csv_test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fcfort/betterment-csv-chrome.git"
+  },
+  "keywords": [
+    "betterment",
+    "pdf",
+    "csv",
+    "chrome",
+    "extension"
+  ],
+  "author": "Frank",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fcfort/betterment-csv-chrome/issues"
+  },
+  "homepage": "https://github.com/fcfort/betterment-csv-chrome#readme"
+}
