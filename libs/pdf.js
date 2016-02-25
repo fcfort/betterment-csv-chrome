@@ -2332,7 +2332,7 @@ PDFJS.disableWorker = (PDFJS.disableWorker === undefined ?
  * in a chrome extension content script.
  */
 PDFJS.workerSrc = chrome.extension.getURL("libs/pdf.worker.js");
-console.log('PDFJS.workerSrc:'+PDFJS.workerSrc);
+
 /**
  * Disable range request loading of PDF files. When enabled and if the server
  * supports partial content requests then the PDF will be fetched in chunks.
