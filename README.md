@@ -15,9 +15,13 @@ Source Code: [github.com/fcfort/betterment-csv-chrome](https://github.com/fcfort
 ## Unpacked Extension
 
 - If you downloaded the code, unzip the file.
-- Open (chrome://extensions/) or select the menu `Window > Extensions`.
+- Open [chrome://extensions/] or select the menu `Window > Extensions`.
 - Enable the developer mode at top right.
 - Click `Load unpacked extension...` and select the source code folder.
+
+## Testing
+
+This project uses Mocha for testing. Run tests using `mocha`. Requires node.js to be installed.
 
 ## Libraries
 
@@ -25,6 +29,7 @@ Source Code: [github.com/fcfort/betterment-csv-chrome](https://github.com/fcfort
 - [patch-worker.js](https://github.com/Rob--W/chrome-api/tree/master/patch-worker) - A workaround to allow the use of Web Workers in Chrome content scripts.
 - [Mutation Summary](https://github.com/rafaelw/mutation-summary) - Observe changes to the DOM.
 - [jQuery](https://github.com/jquery/jquery)
+- [Mocha](https://github.com/mochajs/mocha) - A Javascript test framework.
 
 ## Related projects
 
