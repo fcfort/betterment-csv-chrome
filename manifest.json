@@ -3,6 +3,10 @@
   "name": "Betterment CSV export",
   "version": "0.0.1",
 
+  "icons": {
+    "128": "images/icon128.png"
+  },
+
   "description": "A Chrome extension capable of exporting ticker-level transaction data on the 'Activity' page.",
   "content_scripts": [
     {
@@ -19,6 +23,17 @@
       ]
     }
   ],
+ "background": {
+    "scripts": ["src/show_page_icon.js"],
+    "persistent": false
+  }, 
+  "page_action": {
+    "default_icon": {
+      "38": "images/icon38.png"
+    },
+    "default_title": "Betterment PDF to CSV"
+  },
+  "permissions": ["declarativeContent"],
   "web_accessible_resources": [
     "libs/pdf.worker.js"
   ]

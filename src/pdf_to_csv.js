@@ -7,14 +7,11 @@ function handleNewAnchors(summaries) {
 
 	anchorSummaries.added.forEach(function(newEl) {
 	if(newEl.href.includes('.pdf')) {
-		var pdfUrl = newEl.href;
-
-		this.pdfToTextArray(newEl.href).then(function(result) {
-      // console.log("PDF done!", result);
-      console.log("PDF done!");
+    var pdfUrl = newEl.href;
+    this.pdfToTextArray(newEl.href).then(function(result) {
+      console.log(JSON.stringify(result));
       var transactions = pdftoArray.parse(result);
       csvBlob = TransactionsToCsv(transactions);
-      //$(document.body).append(createCsvUrl(csvBlob));
       $(newEl).before(createCsvUrl(csvBlob));
 		});
 	}});
@@ -23,7 +20,8 @@ function handleNewAnchors(summaries) {
 this.createCsvUrl = function(csv) {
   var a = document.createElement('a');
   a.href = window.URL.createObjectURL(csv);
-  a.textContent = 'csv';
+  a.textContent = '.csv';
+  a.style = 'font-size: 12px';
   return a;
 }
 
@@ -60,7 +58,7 @@ this.pdfToTextArray = function(pdfUrl) {
 	                	textArray.push([]);
 	                }
 
-	             	textArray[lineOffset].push(item.str);
+                  textArray[lineOffset].push(item.str);
 
 	                lastOffset = item.transform[5];
 	             }).join(' ');
@@ -70,9 +68,4 @@ this.pdfToTextArray = function(pdfUrl) {
 	 	return textArray;
 	 });
 	});
-}
-
-// https://github.com/fcfort/betterment-pdf-to-csv/blob/master/betterment-pdf-to-csv.py
-this.textToTransactions = function(pdfArray) {
-
 }

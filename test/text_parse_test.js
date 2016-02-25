@@ -11,6 +11,86 @@ describe('Array', function() {
 });
 
 describe('Betterment PDF Parsing', function() {
+	var pdfParser = new BettermentPdfArrayParser.BettermentPdfArrayParser();
+
+	describe('wire transfer', function() {
+		var wireTransferPdf = [
+		]
+	});
+
+	describe('401k confirmation', function() {
+		var four01kPdf = [
+			[],
+			["Page ","1"," of ","2"],
+			["Overview"],
+			["Current Balance","$1,153.76"],
+			["Total invested","$1,697.62"],
+			["Total earned","-$1,543.86"],
+			["Account opened"],
+			["Betterment 401(k) Savings Plan FBO Bob Bob"],
+			["bob@example.com"],
+			["1 Blah St"],
+			["#1"],
+			["Blah, CC11111"],
+			["Transaction Confirmation"],
+			["Betterment"],
+			["Betterment Securities, Broker-Dealer"],
+			["61 West 23rd Street, 5th Floor "],
+			["New York, NY 10010 "],
+			["888.428.9482"],
+			["Traditional 401(k) Goal"],
+			["Transaction Summary: 1/29/2016 Payroll Contribution"],
+			["Portfolio"],
+			["Prior"],
+			["Balance","Change"],
+			["Current"],
+			["Balance"],
+			["Balance"],
+			["Composition"],
+			["Stocks","$1,215.02","$1,938.74","$1,153.76","100%"],
+			["Bonds","$0.00","$0.00","$0.00","0%"],
+			["Account Total","$1,215.02","$1,938.74","$1,153.76","100%"],
+			["Transaction Detail"],
+			["Change","Balance"],
+			["Date "],
+			["1"],
+			["Transaction "],
+			["2"],
+			["Portfolio/Fund","Price","Shares","Value","Shares","Value"],
+			["Feb 3 2016","1/29/2016 Payroll Contribution","Stocks / VTI","$95.56","10.472","$1,000.68","113.387","$1,835.23"],
+			["Stocks / VTV","$75.25","12.710","$956.45","1.960","$1,832.95"],
+			["Stocks / VOE","$77.84","3.918","$305.00","1.588","$1,470.72"],
+			["Stocks / VBR","$89.55","2.838","$254.12","1.884","$1,034.27"],
+			["Stocks / VEA","$33.59","56.773","$1,907.01","1.773","$1,050.50"],
+			["Stocks / VWO","$29.64","17.391","$515.48","1.547","$1,930.09"],
+			["1"],
+			[" Unless otherwise noted, the settlement date is three market days after the transaction date. "],
+		];
+
+/*
+Traditional 401(k) Goal,2/18/2016,VEA,2/12/2016 Payroll Contribution,NaN,34.02,2,299.92
+*/
+		var transactions = pdfParser.parse(four01kPdf);
+		
+		it('should return the right transactions', function () {
+			var expectedTransactions = [
+				{ticker: 'VTI', price: '95.56', amount: '1000.68', quantity: '10.471746'},
+				{ticker: 'VTV', price: '75.25', amount: '956.45', quantity: '12.710299'},
+				{ticker: 'VOE', price: '77.84', amount: '305.00', quantity: '3.918294'},
+				{ticker: 'VBR', price: '89.55', amount: '254.12', quantity: '2.837744'},
+				{ticker: 'VEA', price: '33.59', amount: '1907.01', quantity: '56.773147'},
+				{ticker: 'VWO', price: '29.64', amount: '515.48', quantity: '17.391363'},
+			];
+			expectedTransactions.forEach(function(tran) {
+				tran.account = 'Traditional 401(k) Goal';
+				tran.description = '1/29/2016 Payroll Contribution';
+				tran.date = new Date('Feb 3 2016');
+			});
+			assert.deepEqual(expectedTransactions, transactions);
+		});
+
+	});
+
 	describe('transaction confirmation', function () {
 		var contributionPdf = [
 			[],
@@ -113,8 +193,7 @@ describe('Betterment PDF Parsing', function() {
 			["Copies of statements and confirmations are available securely at bettermentsecurities.com."]
 		];
 
-		b = new BettermentPdfArrayParser.BettermentPdfArrayParser();
-		var transactions = b.parse(contributionPdf);
+		var transactions = pdfParser.parse(contributionPdf);
 		
 		it('should return the right number of transactions', function () {
 			assert.equal(10, transactions.length);

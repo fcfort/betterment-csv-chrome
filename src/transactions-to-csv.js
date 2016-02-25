@@ -2,7 +2,7 @@ var TransactionsToCsv = function(transactions) {
 	var tranCsv = transactions.map(function(tran) {
 		return [
 			tran.account, 
-			tran.date, 
+			tran.date.toLocaleDateString('en-US'), 
 			tran.ticker, 
 			tran.description, 
 			tran.quantity,

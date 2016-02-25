@@ -1,7 +1,5 @@
-// Define the Person constructor
 var BettermentPdfArrayParser = function() {};
 
-// Add a couple of methods to Person.prototype
 BettermentPdfArrayParser.prototype.parse = function(array){
   var transactions = [];
   var inTransactionSection = false;
@@ -27,9 +25,9 @@ BettermentPdfArrayParser.prototype.parse = function(array){
   		}
   			// ["Stocks / VTI","$96.96","0.166","$16.11","1.995","$193.42"]
   		ticker = line[0].split(" / ")[1];
-  		price = line[1].substr(1);
-  		amount = line[3].substr(1);  		
-  		quantity = (amount/price).toFixed(6);
+  		price = line[1].substr(1).replace(',','');
+  		amount = line[3].substr(1).replace(',','');
+      quantity = (amount/price).toFixed(6);
 
   		var transaction = {
   			// global
@@ -49,3 +47,8 @@ BettermentPdfArrayParser.prototype.parse = function(array){
 
   return transactions;
 };
+
+
+if(module && module.exports) {
+  module.exports.BettermentPdfArrayParser = BettermentPdfArrayParser;
+}
