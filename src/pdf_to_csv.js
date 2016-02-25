@@ -1,22 +1,34 @@
 console.log('extension content script loaded ');
 
-function handleHTweetChanges(summaries) {
-  var hTweetSummary = summaries[0];
+function handleNewAnchors(summaries) {
+	var anchorSummaries = summaries[0];
 
-  hTweetSummary.added.forEach(function(newEl) {
-    if(newEl.href.includes('.pdf')) {
-    	var pdfUrl = newEl.href;
+	var pdftoArray = new BettermentPdfArrayParser();
 
-    	this.pdfToTextArray(newEl.href).then(function(result) {
-			console.log("PDF done!", result);
- 		});		
+	anchorSummaries.added.forEach(function(newEl) {
+	if(newEl.href.includes('.pdf')) {
+		var pdfUrl = newEl.href;
 
-    }
-  });
+		this.pdfToTextArray(newEl.href).then(function(result) {
+      // console.log("PDF done!", result);
+      console.log("PDF done!");
+      var transactions = pdftoArray.parse(result);
+      csvBlob = TransactionsToCsv(transactions);
+      //$(document.body).append(createCsvUrl(csvBlob));
+      $(newEl).before(createCsvUrl(csvBlob));
+		});
+	}});
+}
+
+this.createCsvUrl = function(csv) {
+  var a = document.createElement('a');
+  a.href = window.URL.createObjectURL(csv);
+  a.textContent = 'csv';
+  return a;
 }
 
 var observer = new MutationSummary({
-  callback: handleHTweetChanges,
+  callback: handleNewAnchors,
   queries: [{ element: 'a[href]' }]
 });
 

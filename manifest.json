@@ -13,7 +13,9 @@
         "libs/pdf.js",
         "libs/mutation-summary.js", 
         "libs/jquery-2.2.0.min.js", 
-        "src/pdf_to_csv.js"
+        "src/transactions-to-csv.js",
+        "src/betterment-pdf-array-parser.js",
+        "src/pdf_to_csv.js"     
       ]
     }
   ],
