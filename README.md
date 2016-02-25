@@ -25,7 +25,7 @@ This project uses Mocha for testing. Run tests using `mocha`. Requires node.js t
 
 ## Libraries
 
-- [PDF.js](https://github.com/mozilla/pdf.js) - Client-side PDF parsing.
+- [PDF.js](https://github.com/mozilla/pdf.js) - Client-side PDF parsing. Local modification because of [pdf.js#5344](https://github.com/mozilla/pdf.js/issues/5344).
 - [patch-worker.js](https://github.com/Rob--W/chrome-api/tree/master/patch-worker) - A workaround to allow the use of Web Workers in Chrome content scripts.
 - [Mutation Summary](https://github.com/rafaelw/mutation-summary) - Observe changes to the DOM.
 - [jQuery](https://github.com/jquery/jquery)
