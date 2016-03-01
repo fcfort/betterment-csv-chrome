@@ -1,5 +1,16 @@
 var TransactionsToCsv = function(transactions) {
-	var tranCsv = transactions.map(function(tran) {
+	var headers = [
+		'Account',
+		'Transaction Date',
+		'Symbol',
+		'Description',
+		'Quantity',
+		'Price',
+		'Amount'
+	];
+
+  var tranRows = [headers.join()];
+	tranRows = tranRows.concat(transactions.map(function(tran) {
 		return [
 			tran.account, 
 			tran.date.toLocaleDateString('en-US'), 
@@ -8,8 +19,10 @@ var TransactionsToCsv = function(transactions) {
 			tran.quantity,
 			tran.price,
 			tran.amount
-		].join() + "\n";
-	}).join("");
+		].join()
+  }));
 
-	return new Blob([tranCsv], {type: 'text/csv'});	
+  var tranCsv = tranRows.join('\n');
+
+	return new Blob([tranCsv], {type: 'text/csv', endings: 'native'});	
 };

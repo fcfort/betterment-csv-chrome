@@ -4,20 +4,54 @@ function handleNewAnchors(summaries) {
 	var pdftoArray = new BettermentPdfArrayParser();
 
 	anchorSummaries.added.forEach(function(newEl) {
-	if(newEl.href.includes('.pdf')) {
     var pdfUrl = newEl.href;
-    this.pdfToTextArray(newEl.href).then(function(result) {
-      console.log(JSON.stringify(result));
-      var transactions = pdftoArray.parse(result);
-      csvBlob = TransactionsToCsv(transactions);
-      $(newEl).before(createCsvUrl(csvBlob));
-		});
-	}});
+    if(this.transactionPdfRe.test(pdfUrl)) {
+      this.pdfToTextArray(newEl.href).then(function(result) {
+        //console.log(JSON.stringify(result));
+        var transactions = pdftoArray.parse(result);
+        csvBlob = TransactionsToCsv(transactions);
+        $(newEl).before(createCsvUrl(csvBlob, pdfUrl));
+  		});
+    }
+	});
 }
 
-this.createCsvUrl = function(csv) {
+/* Only documents beginning with these names will be converted to .csv */
+this.transactionPdfStrings = [
+  'Betterment_Deposit_',
+  'Betterment_Dividend_Reinvestment_',
+  'Betterment_Quarterly_Statement',
+  'Betterment_Account_Transfer_From_',
+  'Betterment_Account_Transfer_To_'
+];
+
+this.createTransactionRegex = function() {
+  // Two cases
+  // 1. app/quarterly_statements for 401k quarterly statements
+  // 2. document/blah.pdf for all other PDFs
+  return new RegExp(
+    '.*?/(?:app/quarterly_statements/\\d+|document/(?:' + this.transactionPdfStrings.join('|') + ').*?\\.pdf)'
+  );
+}
+
+this.transactionPdfRe = createTransactionRegex();
+console.log(this.transactionPdfRe);
+this.transactionPdfNameRe = /.*?\/document\/(.*?)\.pdf/;
+
+
+this.createCsvUrl = function(csvBlob, pdfUrl) {
   var a = document.createElement('a');
-  a.href = window.URL.createObjectURL(csv);
+  a.href = window.URL.createObjectURL(csvBlob);
+
+  // Grab filename for CSV from PDF URL.
+  // https://wwws.betterment.com/document/Betterment_Deposit_2016-02-18.pdf
+  var found = pdfUrl.match(this.transactionPdfNameRe);
+  if(found) {
+    a.download = found[1] + '.csv';  
+  } else {
+    a.download = 'transactions.csv';
+  }
+
   a.textContent = '.csv';
   a.style = 'font-size: 12px';
   return a;
