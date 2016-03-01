@@ -12,11 +12,11 @@
     {
       "run_at": "document_start",
       "matches": ["https://wwws.betterment.com/app*"],
-      "js": [
+      "js": [        
         "libs/patch-worker.js",
         "libs/pdf.js",
-        "libs/mutation-summary.js", 
-        "libs/jquery-2.2.0.min.js", 
+        "libs/mutation-summary.js",
+        "libs/jquery-2.2.0.min.js",
         "src/transactions-to-csv.js",
         "src/betterment-pdf-array-parser.js",
         "src/pdf_to_csv.js"     

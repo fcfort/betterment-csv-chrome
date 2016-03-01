@@ -6,7 +6,81 @@ describe('Betterment PDF Parsing', function() {
 
 	describe('wire transfer', function() {
 		var wireTransferPdf = [
+			[],
+			["Page ","1"," of ","2"],
+			["Overview"],
+			["Current Balance","$1,293.82"],
+			["Total invested","$1,320.15"],
+			["Total earned","-$26.33"],
+			["Account opened"],
+			["Betterment 401(k) Savings Plan FBO Bob Bob"],
+			["bob@example.com"],
+			["1 Blah St"],
+			["#1"],
+			["Blah, CC11111"],
+			["Transaction Confirmation"],
+			["Betterment"],
+			["Betterment Securities, Broker-Dealer"],
+			["61 West 23rd Street, 5th Floor "],
+			["New York, NY 10010 "],
+			["888.428.9482"],
+			["Traditional 401(k) Goal"],
+			["Transaction Summary: Wire for 401(k) Plan Conversion"],
+			["Portfolio"],
+			["Prior"],
+			["Balance","Change"],
+			["Current"],
+			["Balance"],
+			["Balance"],
+			["Composition"],
+			["Stocks","$973.67","$1,320.15","$1,293.82","100%"],
+			["Bonds","$0.00","$0.00","$0.00","0%"],
+			["Account Total","$973.67","$1,320.15","$1,293.82","100%"],
+			["Transaction Detail"],
+			["Change","Balance"],
+			["Date "],
+			["1"],
+			["Transaction "],
+			["2"],
+			["Portfolio/Fund","Price","Shares","Value","Shares","Value"],
+			["Nov 17 2015"],
+			["Wire for 401(k) Plan"],
+			["Conversion"],
+			["Stocks / VTV","$82.18","1119.272","$1,801.75","121.384","$1,975.30"],
+			["Stocks / VTI","$105.42","912.934","$1,797.11","94.571","$1,969.63"],
+			["Stocks / VOE","$87.41","315.885","$1,136.72","36.517","$1,191.98"],
+			["Stocks / VBR","$101.98","126.909","$1,744.21","27.380","$1,792.23"],
+			["Stocks / VEA","$37.50","6104.487","$11,668.28","615.176","$11,069.10"],
+			["Stocks / VWO","$34.39","2018.551","$1,172.08","212.142","$1,295.58"],
+			["1"],
+			[" Unless otherwise noted, the settlement date is three market days after the transaction date. "],
+			[" Betterment Securities acted as an agent for you and bought or sold securities on your behalf. "],
+			["2"],
+			["Note: If this transaction included a sale of non-covered securities (purchased outside of Betterment and transferred into your account with incomplete lot"],
+			["information), the purchase date with respect to those lots may be an estimate."]
 		]
+
+		var transactions = pdfParser.parse(wireTransferPdf);
+		
+		it('should return the right transactions', function () {
+			var expectedTransactions = [
+				// These quantity numbers don't match the above PDF since we're calculating them from
+				// price and amount.
+				{ticker: 'VTV', price: '82.18', amount: '1801.75', quantity: '21.924434'},
+				{ticker: 'VTI', price: '105.42', amount: '1797.11', quantity: '17.047145'},
+				{ticker: 'VOE', price: '87.41', amount: '1136.72', quantity: '13.004462'},
+				{ticker: 'VBR', price: '101.98', amount: '1744.21', quantity: '17.103452'},
+				{ticker: 'VEA', price: '37.50', amount: '11668.28', quantity: '311.154133'},
+				{ticker: 'VWO', price: '34.39', amount: '1172.08', quantity: '34.082001'},
+			];
+			expectedTransactions.forEach(function(tran) {
+				tran.account = 'Traditional 401(k) Goal';
+				tran.description = 'Wire for 401(k) Plan Conversion';
+				tran.date = new Date('Nov 17 2015');
+			});
+			assert.deepEqual(expectedTransactions, transactions);
+		});
+
 	});
 
 	describe('401k confirmation', function() {
@@ -58,9 +132,6 @@ describe('Betterment PDF Parsing', function() {
 			[" Unless otherwise noted, the settlement date is three market days after the transaction date. "],
 		];
 
-/*
-Traditional 401(k) Goal,2/18/2016,VEA,2/12/2016 Payroll Contribution,NaN,34.02,2,299.92
-*/
 		var transactions = pdfParser.parse(four01kPdf);
 		
 		it('should return the right transactions', function () {
@@ -197,16 +268,16 @@ Traditional 401(k) Goal,2/18/2016,VEA,2/12/2016 Payroll Contribution,NaN,34.02,2
 		});
 
  		it('should return the right description', function () {
- 			 assert(transactions.every(function(tran) {
-				return "Automatic Deposit" == tran.description;
-			}));
+ 			transactions.forEach(function(tran) {
+ 			 	assert.equal("Automatic Deposit", tran.description);
+			});
 		});
 
  		it('should return the right date', function () {
  			var expectedDate = new Date(2016, 1, 19); 
- 			assert(transactions.every(function(tran) {
-				return expectedDate.getTime() == tran.date.getTime();
-			}));
+ 			transactions.forEach(function(tran) {
+ 				assert.equal(expectedDate.getTime(), tran.date.getTime());
+			});
 		});	 			 
 
 		it('should return the right tickers', function () {

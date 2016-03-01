@@ -1,5 +1,3 @@
-console.log('extension content script loaded ');
-
 function handleNewAnchors(summaries) {
 	var anchorSummaries = summaries[0];
 
@@ -40,6 +38,7 @@ this.pdfToTextArray = function(pdfUrl) {
 	return PDFJS.getDocument(pdfUrl).then(function(pdf) {
 	 var lineOffset = 0;
 	 var textArray = [[]];
+
 	 
 	 var pages = [];
 	 for (var i = 0; i < pdf.numPages; i++) {
