@@ -4,7 +4,7 @@
   "version": "0.0.1",
 
   "icons": {
-    "128": "images/icon128_2.png"
+    "128": "images/icon128.png"
   },
 
   "description": "Export ticker-level transaction data from Betterment.com as CSV files",

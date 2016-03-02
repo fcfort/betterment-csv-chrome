@@ -2,12 +2,11 @@
 
 module.exports = function(grunt) {
   // Project configuration.
-  grunt.initConfig({    
+  grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     crx: {
       extension: {
         "src": "app/**/*",
-        "dest": "dist/",
         "zipDest": "dist/",
         "options": {
           "privateKey": grunt.option("privateKey")
