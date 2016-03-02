@@ -1,5 +1,5 @@
 var assert = require('assert');
-var TransactionsToCsv = require('../src/transactions-to-csv');
+var TransactionsToCsv = require('../app/src/transactions-to-csv');
 
 describe('Transactions To CSV', function() {
 

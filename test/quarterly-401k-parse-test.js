@@ -1,5 +1,5 @@
 var assert = require('assert');
-var arrayParser = require('../src/betterment-pdf-array-parser');
+var arrayParser = require('../app/src/betterment-pdf-array-parser');
 
 describe('Betterment PDF Parsing', function() {
 	describe('Quarterly 401(k) PDFs', function() {

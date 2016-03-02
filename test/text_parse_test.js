@@ -1,6 +1,6 @@
 var assert = require('assert');
 var should = require('should');
-var BettermentPdfArrayParser = require('../src/betterment-pdf-array-parser');
+var BettermentPdfArrayParser = require('../app/src/betterment-pdf-array-parser');
 
 describe('Betterment PDF Parsing', function() {
 	var pdfParser = new BettermentPdfArrayParser.BettermentPdfArrayParser();
