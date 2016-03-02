@@ -1,3 +1,4 @@
+
 function handleNewAnchors(summaries) {
 	var anchorSummaries = summaries[0];
 
