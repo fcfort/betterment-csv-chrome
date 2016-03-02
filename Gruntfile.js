@@ -7,7 +7,8 @@ module.exports = function(grunt) {
     crx: {
       extension: {
         "src": "app/**/*",
-        "dest": "dist/crx/",
+        "dest": "dist/",
+        "zipDest": "dist/",
         "options": {
           "privateKey": grunt.option("privateKey")
         },

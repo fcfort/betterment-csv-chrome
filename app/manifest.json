@@ -4,10 +4,10 @@
   "version": "0.0.1",
 
   "icons": {
-    "128": "images/icon128.png"
+    "128": "images/icon128_2.png"
   },
 
-  "description": "A Chrome extension capable of exporting ticker-level transaction data on the 'Activity' page.",
+  "description": "Export ticker-level transaction data from Betterment.com as CSV files",
   "content_scripts": [
     {
       "run_at": "document_start",
