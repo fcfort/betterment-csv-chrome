@@ -8,7 +8,7 @@ This extension parses those PDFs and creates ticker-level transaction .csv downl
 
 ## Installing
 
-To access development releases, simply download or clone this code and load as an unpacked extension.
+To access development releases, simply download or clone this code and load the `app` directory as an unpacked extension.
 
 Source Code: [github.com/fcfort/betterment-csv-chrome](https://github.com/fcfort/betterment-csv-chrome)
 

@@ -1,20 +1,21 @@
- module.exports = function(grunt) {
+'use strict';
 
+module.exports = function(grunt) {
   // Project configuration.
-  grunt.initConfig({
+  grunt.initConfig({    
     pkg: grunt.file.readJSON('package.json'),
-	crx: {
-		extension: {
-		  "src": [
-		  	"src/**/*",
-		  	"libs/**/*",
-		  ],
-		  "dest": "dist/crx/",
-		}
-	}
+    crx: {
+      extension: {
+        "src": "app/**/*",
+        "dest": "dist/crx/",
+        "options": {
+          "privateKey": grunt.option("privateKey")
+        },
+      }
+    }
   });
 
   grunt.loadNpmTasks('grunt-crx');
 
-  grunt.registerTask('default', ['crx']);
+  grunt.registerTask('package', ['crx']);
 };
