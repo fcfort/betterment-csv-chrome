@@ -7,7 +7,6 @@ function handleNewAnchors(summaries) {
     var pdfUrl = newEl.href;
     if(this.transactionPdfRe.test(pdfUrl)) {
       this.pdfToTextArray(newEl.href).then(function(result) {
-        //console.log(JSON.stringify(result));
         var transactions = pdftoArray.parse(result);
         csvBlob = TransactionsToCsv(transactions);
         $(newEl).before(createCsvUrl(csvBlob, pdfUrl));
@@ -73,7 +72,6 @@ this.pdfToTextArray = function(pdfUrl) {
 	 var lineOffset = 0;
 	 var textArray = [[]];
 
-	 
 	 var pages = [];
 	 for (var i = 0; i < pdf.numPages; i++) {
 	     pages.push(i);
@@ -94,7 +92,7 @@ this.pdfToTextArray = function(pdfUrl) {
 	     return pdf.getPage(pageNumber + 1).then(function(page) {	     	
 	         return page.getTextContent().then(function(textContent) {
 	         	 var lastOffset = 0;
-	             return textContent.items.map(function(item) {	             	
+	             return textContent.items.map(function(item) {
 	                var offset = item.transform[5];
 
 	                if(offset != lastOffset) {

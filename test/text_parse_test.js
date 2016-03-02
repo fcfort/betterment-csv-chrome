@@ -1,8 +1,52 @@
 var assert = require('assert');
+var should = require('should');
 var BettermentPdfArrayParser = require('../src/betterment-pdf-array-parser');
 
 describe('Betterment PDF Parsing', function() {
 	var pdfParser = new BettermentPdfArrayParser.BettermentPdfArrayParser();
+	
+	describe('Date formats', function() {
+		it('should parse brokerage date formats', function() {
+			var transactions = pdfParser.parse([
+				["Blah Goal"],
+				["Portfolio/Fund","Price","Shares","Value","Shares","Value"],
+				["Feb 3 2016","Blah","Stocks / VTI","$95.56","10.472","-$1,000.68","1.387","$1.23"],
+			]);
+
+			transactions[0].date.should.eql(new Date(2016, 1, 3));
+		});
+
+		it('should parse 401(k) date formats', function() {
+			var transactions = pdfParser.parse([
+				["Blah Goal"],
+				["Portfolio/Fund","Price","Shares","Value","Shares","Value"],				
+				["Nov 2nd, 2015","Blah","Stocks / MUB","$95.56","10.472","-$1,000.68","1.387","$1.23"],
+				["Dec 29th, 2015","Blah","Stocks / VTI","$95.56","10.472","-$1,000.68","1.387","$1.23"],
+			]);
+
+			transactions[0].date.should.eql(new Date(2015, 10, 2));
+			transactions[1].date.should.eql(new Date(2015, 11, 29));
+		});
+	});
+
+	describe('negative values', function() {
+		var testPdf = [
+			["Traditional 401(k) Goal"],
+			["Portfolio/Fund","Price","Shares","Value","Shares","Value"],
+			["Feb 3 2016","1/29/2016 Payroll Contribution","Stocks / VTI","$95.56","10.472","-$1,000.68","1.387","$1.23"],
+		];
+
+		var transactions = pdfParser.parse(testPdf);
+
+		it('should parse negative amounts correctly', function() {
+			assert.equal(1, transactions.length);
+			assert.equal("-1000.68", transactions[0].amount);
+		});
+
+		it('should return negative quantities with negative amounts', function() {
+			assert.equal("-10.471746", transactions[0].quantity);
+		});		
+	});
 
 	describe('wire transfer', function() {
 		var wireTransferPdf = [

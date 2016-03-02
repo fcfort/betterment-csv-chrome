@@ -1,12 +1,12 @@
 var TransactionsToCsv = function(transactions) {
 	var headers = [
 		'Account',
-		'Transaction Date',
-		'Symbol',
-		'Description',
-		'Quantity',
+		'Date',
+		'Transaction',
+		'Portfolio/Fund',
 		'Price',
-		'Amount'
+		'Shares',
+		'Value'
 	];
 
   var tranRows = [headers.join()];
@@ -14,10 +14,10 @@ var TransactionsToCsv = function(transactions) {
 		return [
 			tran.account, 
 			tran.date.toLocaleDateString('en-US'), 
-			tran.ticker, 
-			tran.description, 
-			tran.quantity,
+			tran.description,
+			tran.ticker,		
 			tran.price,
+			tran.quantity,
 			tran.amount
 		].join()
   }));
@@ -26,3 +26,9 @@ var TransactionsToCsv = function(transactions) {
 
 	return new Blob([tranCsv], {type: 'text/csv', endings: 'native'});	
 };
+
+// For mocha testing
+var module = module || {};
+if(module && module.exports) {
+  module.exports.TransactionsToCsv = TransactionsToCsv;
+}
