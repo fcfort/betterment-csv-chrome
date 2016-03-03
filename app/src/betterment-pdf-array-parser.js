@@ -105,4 +105,3 @@ var module = module || {};
 if(module && module.exports) {
   module.exports.BettermentPdfArrayParser = BettermentPdfArrayParser;
 }
-
