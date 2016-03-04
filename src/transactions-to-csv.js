@@ -26,3 +26,9 @@ var TransactionsToCsv = function(transactions) {
 
 	return new Blob([tranCsv], {type: 'text/csv', endings: 'native'});	
 };
+
+// For mocha
+var module = module || {};
+if(module && module.exports) {
+  module.exports.TransactionsToCsv = TransactionsToCsv;
+}
