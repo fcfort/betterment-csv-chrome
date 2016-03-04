@@ -1,10 +1,11 @@
-var assert = require('assert');
-var tranToCsv = require('../src/transactions-to-csv');
+var assert = require('assert'); 
+var TransactionsToCsv = require('../app/src/transactions-to-csv');
 
-console.log(JSON.stringify(tranToCsv));
+describe('Transactions To CSV', function() {
 
-describe('Betterment PDF Parsing', function() {
-	it('should have header row', function() {
+	it('should have a header row', function() {
+	});
+
+	it('should print the transactions', function() {
 	});
 });
-

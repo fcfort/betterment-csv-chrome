@@ -1,13 +1,16 @@
 {
   "manifest_version": 2,
-  "name": "Betterment CSV export",
+  "name": "Betterment PDF to CSV exporter",
+  "short_name": "Betterment PDF to CSV",
   "version": "0.0.1",
+  "description": "Export ticker-level transaction data from Betterment.com as CSV files",
+  "author": "Frank Fort <frank.c.fort@gmail.com>",
+  "homepage_url": "https://github.com/fcfort/betterment-csv-chrome",
 
   "icons": {
     "128": "images/icon128.png"
   },
 
-  "description": "A Chrome extension capable of exporting ticker-level transaction data on the 'Activity' page.",
   "content_scripts": [
     {
       "run_at": "document_start",
@@ -23,17 +26,21 @@
       ]
     }
   ],
+
  "background": {
     "scripts": ["src/show_page_icon.js"],
     "persistent": false
   }, 
+
   "page_action": {
     "default_icon": {
       "38": "images/icon38.png"
     },
-    "default_title": "Betterment PDF to CSV"
+    "default_title": "Betterment PDF to CSV exporter"
   },
+
   "permissions": ["declarativeContent"],
+
   "web_accessible_resources": [
     "libs/pdf.worker.js"
   ]

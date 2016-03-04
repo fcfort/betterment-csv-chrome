@@ -8,7 +8,7 @@ This extension parses those PDFs and creates ticker-level transaction .csv downl
 
 ## Installing
 
-To access development releases, simply download or clone this code and load as an unpacked extension.
+To access development releases, simply download or clone this code and load the `app` directory as an unpacked extension.
 
 Source Code: [github.com/fcfort/betterment-csv-chrome](https://github.com/fcfort/betterment-csv-chrome)
 
@@ -33,7 +33,7 @@ This project uses Mocha for testing. Run tests using `mocha`. Requires node.js t
 
 ## Related projects
 
-I wrote a command-line version that parses PDF files and outputs CSV. See [github.com/fcfort/betterment-pdf-to-csv](https://github.com/fcfort/betterment-pdf-to-csv). This is similar but done entirely client-side as a Chrome extension.
+I wrote a command-line version that parses PDF files and outputs CSV. See [github.com/fcfort/betterment-pdf-to-csv](https://github.com/fcfort/betterment-pdf-to-csv). This project is similar but done entirely client-side as a Chrome extension.
 
 ## License
 
