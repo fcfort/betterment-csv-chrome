@@ -20,9 +20,8 @@
         "libs/pdf.js",
         "libs/mutation-summary.js",
         "libs/jquery-2.2.0.min.js",
-        "src/transactions-to-csv.js",
-        "src/betterment-pdf-array-parser.js",
-        "src/pdf_to_csv.js"     
+        "libs/threads.browser.js",
+        "src/bundle.js"     
       ]
     }
   ],
@@ -42,6 +41,7 @@
   "permissions": ["declarativeContent"],
 
   "web_accessible_resources": [
+    "libs/threads.browser.js",
     "libs/pdf.worker.js"
   ]
 }

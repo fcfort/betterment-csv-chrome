@@ -32,3 +32,5 @@ var module = module || {};
 if(module && module.exports) {
   module.exports.TransactionsToCsv = TransactionsToCsv;
 }
+
+module.exports.TransactionsToCsv = TransactionsToCsv;

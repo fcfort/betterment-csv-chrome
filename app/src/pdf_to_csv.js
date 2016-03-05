@@ -1,23 +1,8 @@
-
-function handleNewAnchors(summaries) {
-  var anchorSummaries = summaries[0];
-
-  var pdftoArray = new BettermentPdfArrayParser();
-
-  anchorSummaries.added.forEach(function(newEl) {
-    var pdfUrl = newEl.href;
-    if(this.transactionPdfRe.test(pdfUrl)) {
-      this.pdfToTextArray(newEl.href).then(function(result) {
-        var transactions = pdftoArray.parse(result);
-        csvBlob = TransactionsToCsv(transactions);
-        $(newEl).before(createCsvUrl(csvBlob, pdfUrl));
-      });
-    }
-  });
-}
+var tran2csv = require('./transactions-to-csv');
+var pdfparser = require('./betterment-pdf-array-parser');
 
 /* Only documents beginning with these names will be converted to .csv */
-this.transactionPdfStrings = [
+var transactionPdfStrings = [
   'Betterment_Deposit_',
   'Betterment_Dividend_Reinvestment_',
   'Betterment_Quarterly_Statement',
@@ -25,27 +10,42 @@ this.transactionPdfStrings = [
   'Betterment_Account_Transfer_To_'
 ];
 
-this.createTransactionRegex = function() {
+function createTransactionRegex() {
   // Two cases
   // 1. app/quarterly_statements for 401k quarterly statements
   // 2. document/blah.pdf for all other PDFs
   return new RegExp(
-    '.*?/(?:app/quarterly_statements/\\d+|document/(?:' + this.transactionPdfStrings.join('|') + ').*?\\.pdf)'
+    '.*?/(?:app/quarterly_statements/\\d+|document/(?:' + transactionPdfStrings.join('|') + ').*?\\.pdf)'
   );
 }
 
-this.transactionPdfRe = createTransactionRegex();
-console.log(this.transactionPdfRe);
-this.transactionPdfNameRe = /.*?\/document\/(.*?)\.pdf/;
+var transactionPdfRe = createTransactionRegex();
+var transactionPdfNameRe = /.*?\/document\/(.*?)\.pdf/;
 
+function handleNewAnchors(summaries) {
+  var anchorSummaries = summaries[0];
 
-this.createCsvUrl = function(csvBlob, pdfUrl) {
+  var pdftoArray = new pdfparser.BettermentPdfArrayParser();
+
+  anchorSummaries.added.forEach(function(newEl) {
+    var pdfUrl = newEl.href;
+    if(transactionPdfRe.test(pdfUrl)) {
+      pdfToTextArray(newEl.href).then(function(result) {
+        var transactions = pdftoArray.parse(result);
+        csvBlob = tran2csv.TransactionsToCsv(transactions);
+        $(newEl).before(createCsvUrl(csvBlob, pdfUrl));
+      });
+    }
+  });
+}
+
+function createCsvUrl(csvBlob, pdfUrl) {
   var a = document.createElement('a');
   a.href = window.URL.createObjectURL(csvBlob);
 
   // Grab filename for CSV from PDF URL.
   // https://wwws.betterment.com/document/Betterment_Deposit_2016-02-18.pdf
-  var found = pdfUrl.match(this.transactionPdfNameRe);
+  var found = pdfUrl.match(transactionPdfNameRe);
   if(found) {
     a.download = found[1] + '.csv';  
   } else {
@@ -68,7 +68,7 @@ var observer = new MutationSummary({
  * new line and each element in the row array is a separate piece of text from
  * the document.
  */
-this.pdfToTextArray = function(pdfUrl) {
+function pdfToTextArray(pdfUrl) {
   return PDFJS.getDocument(pdfUrl).then(function(pdf) {
    var lineOffset = 0;
    var textArray = [[]];
