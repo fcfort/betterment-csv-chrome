@@ -4,20 +4,23 @@
 
 Betterment is a wonderful brokerage service, but doesn't provide ticker-level transaction data for easy export. But, this data is available via the PDFs on the Activity page.
 
-This extension parses those PDFs and creates ticker-level transaction .csv download links on the Activity Page entirely in the browser.
+This extension parses those PDFs and creates ticker-level transaction .csv download links on the Activity Page entirely in the browser using PDF.js and Web Workers.
 
-## Installing
+## Building
 
 To access development releases, simply download or clone this code and load the `app` directory as an unpacked extension.
 
 Source Code: [github.com/fcfort/betterment-csv-chrome](https://github.com/fcfort/betterment-csv-chrome)
 
-## Unpacked Extension
-
 - If you downloaded the code, unzip the file.
+- Run `browserify app/src/pdf_to_csv.js -o app/main.js`
 - Open `chrome://extensions/` or select the menu `Window > Extensions`.
 - Enable the developer mode at top right.
-- Click `Load unpacked extension...` and select the source code folder.
+- Click `Load unpacked extension...` and select the `app` folder.
+
+## Packaging
+
+`grunt package --privateKey ../relative/path/to/key.pem`
 
 ## Testing
 

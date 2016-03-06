@@ -100,10 +100,4 @@ function parseBettermentDate(dateStr) {
   return new Date(dateStr.replace(/(?:th|st|nd|rd)/, ''));
 }
 
-// For mocha testing
-var module = module || {};
-if(module && module.exports) {
-  module.exports.BettermentPdfArrayParser = BettermentPdfArrayParser;
-}
-
 module.exports.BettermentPdfArrayParser = BettermentPdfArrayParser;
