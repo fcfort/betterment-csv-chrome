@@ -1,4 +1,4 @@
-var pdfToTextArray = require('./pdf_to_text_array');
+var pdfToTextArray = require('./pdf-to-text-array');
 var tran2csv = require('./transactions-to-csv');
 var pdfparser = require('./betterment-pdf-array-parser');
 var $ = require('jquery');

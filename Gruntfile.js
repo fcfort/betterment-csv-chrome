@@ -6,7 +6,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     browserify: {
       dist: {
-        src: 'app/src/pdf_to_csv.js',
+        src: 'app/src/pdf-to-csv.js',
         dest: 'app/dist/main.js'
       },
     },
@@ -16,7 +16,7 @@ module.exports = function(grunt) {
           'app/dist/libs.js': ['app/libs/*.js', '!app/libs/pdf.worker.js'],
           'app/dist/pdf.worker.js': ['app/libs/pdf.worker.js'],
           'app/dist/main.js': ['app/dist/main.js'],
-          'app/dist/icon.js': ['app/src/show_page_icon.js'],
+          'app/dist/icon.js': ['app/src/show-page-icon.js'],
         }
       }
     },
