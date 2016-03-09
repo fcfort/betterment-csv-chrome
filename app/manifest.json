@@ -37,6 +37,6 @@
   "permissions": ["declarativeContent"],
 
   "web_accessible_resources": [
-    "libs/pdf.worker.js"
+    "dist/pdf.worker.js"
   ]
 }

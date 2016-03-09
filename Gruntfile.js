@@ -14,6 +14,7 @@ module.exports = function(grunt) {
       dist: {
         files: {
           'app/dist/libs.js': ['app/libs/*.js', '!app/libs/pdf.worker.js'],
+          'app/dist/pdf.worker.js': ['app/libs/pdf.worker.js'],
           'app/dist/main.js': ['app/dist/main.js'],
           'app/dist/icon.js': ['app/src/show_page_icon.js'],
         }
@@ -23,7 +24,6 @@ module.exports = function(grunt) {
       extension: {
         "src": [
           "app/images/*.png",
-          "app/libs/pdf.worker.js",
           "app/dist/*.js",
           "app/manifest.json",
         ],

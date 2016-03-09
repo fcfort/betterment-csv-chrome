@@ -2331,7 +2331,7 @@ PDFJS.disableWorker = (PDFJS.disableWorker === undefined ?
  * content script. PDFJS uses document.currentScript which does not work
  * in a chrome extension content script.
  */
-PDFJS.workerSrc = chrome.extension.getURL("libs/pdf.worker.js");
+PDFJS.workerSrc = chrome.extension.getURL("dist/pdf.worker.js");
 
 /**
  * Disable range request loading of PDF files. When enabled and if the server
