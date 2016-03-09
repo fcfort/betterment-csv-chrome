@@ -1,6 +1,7 @@
 var pdfToTextArray = require('./pdf_to_text_array');
 var tran2csv = require('./transactions-to-csv');
 var pdfparser = require('./betterment-pdf-array-parser');
+var $ = require('jquery');
 
 /* Only documents beginning with these names will be converted to .csv */
 var transactionPdfStrings = [

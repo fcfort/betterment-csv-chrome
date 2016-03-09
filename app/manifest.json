@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Betterment PDF to CSV exporter",
   "short_name": "Betterment PDF to CSV",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Easily download your ticker-level transactions from Betterment.com as CSV files.",
   "author": "Frank Fort <frank.c.fort@gmail.com>",
   "homepage_url": "https://github.com/fcfort/betterment-csv-chrome",
@@ -16,17 +16,14 @@
       "run_at": "document_start",
       "matches": ["https://wwws.betterment.com/app*"],
       "js": [        
-        "libs/patch-worker.js",
-        "libs/pdf.js",
-        "libs/mutation-summary.js",
-        "libs/jquery-2.2.0.min.js",
-        "main.js"     
+        "dist/libs.js",
+        "dist/main.js"     
       ]
     }
   ],
 
  "background": {
-    "scripts": ["src/show_page_icon.js"],
+    "scripts": ["dist/icon.js"],
     "persistent": false
   }, 
 
