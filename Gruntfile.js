@@ -31,7 +31,6 @@ module.exports = function(grunt) {
         "zipDest": "dist/builds",
         "options": {
           "privateKey": grunt.option("privateKey"),
-          "maxBuffer": 10000 * 1024 //build extension with a weight up to 3MB  
         },
       }
     },
