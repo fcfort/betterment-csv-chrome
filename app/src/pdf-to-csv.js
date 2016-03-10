@@ -17,50 +17,68 @@ function createTransactionRegex() {
   // 1. app/quarterly_statements for 401k quarterly statements
   // 2. document/blah.pdf for all other PDFs
   return new RegExp(
-    '.*?/(?:app/quarterly_statements/\\d+|document/(?:' + transactionPdfStrings.join('|') + ').*?\\.pdf)'
+    '.*?/(?:app/quarterly_statements/\\d+|document/(?:' + 
+    transactionPdfStrings.join('|') + 
+    ').*?\\.pdf)'
   );
 }
 
+var quarterlyPdfUrlRe = /.*?\/app\/quarterly_statements\/\d+.*/;
 var transactionPdfRe = createTransactionRegex();
 var transactionPdfNameRe = /.*?\/document\/(.*?)\.pdf/;
-
-function handleNewAnchors(summaries) {
-  var anchorSummaries = summaries[0];
-
-  var pdftoArray = new pdfparser.BettermentPdfArrayParser();
-
-  anchorSummaries.added.forEach(function(newEl) {
-    var pdfUrl = newEl.href;
-    if(transactionPdfRe.test(pdfUrl)) {
-      pdfToTextArray(pdfUrl).then(function(result) {
-        var transactions = pdftoArray.parse(result);
-        csvBlob = tran2csv.TransactionsToCsv(transactions);
-        $(newEl).before(createCsvUrl(csvBlob, pdfUrl));
-      });
-    }
-  });
-}
-
-function createCsvUrl(csvBlob, pdfUrl) {
-  var a = document.createElement('a');
-  a.href = window.URL.createObjectURL(csvBlob);
-
-  // Grab filename for CSV from PDF URL.
-  // https://wwws.betterment.com/document/Betterment_Deposit_2016-02-18.pdf
-  var found = pdfUrl.match(transactionPdfNameRe);
-  if(found) {
-    a.download = found[1] + '.csv';  
-  } else {
-    a.download = 'transactions.csv';
-  }
-
-  a.textContent = '.csv';
-  a.style = 'font-size: 12px';
-  return a;
-}
+var pdftoArray = new pdfparser.BettermentPdfArrayParser();
 
 var observer = new MutationSummary({
   callback: handleNewAnchors,
   queries: [{ element: 'a[href]' }]
 });
 
+function handleNewAnchors(summaries) {
+  var anchorSummaries = summaries[0];
+
+  anchorSummaries.added.forEach(function(newEl) {
+    var pdfUrl = newEl.href;
+    if(transactionPdfRe.test(pdfUrl)) {
+      pdfToTextArray(pdfUrl).then(function(result) {
+        var transactions = pdftoArray.parse(result);
+        var csvBlob = tran2csv.TransactionsToCsv(transactions);
+
+        getFilenamePromise(pdfUrl).then(function(filename) {
+          $(newEl).before(createCsvUrl(csvBlob, pdfUrl, filename));
+        });
+      });
+    }
+  });
+}
+
+// Grab filename for CSV from PDF URL. Is a promise because we have to make
+// an ajax call if it is a quarterly 401k PDF.
+// https://wwws.betterment.com/document/Betterment_Deposit_2016-02-18.pdf
+function getFilenamePromise(pdfUrl) {
+  if(quarterlyPdfUrlRe.test(pdfUrl)) {
+    return new Promise(function(resolve) {
+      $.ajax({url: pdfUrl}).done(function(data, textStatus, jqXHR) {
+        // content-disposition: attachment; filename="Betterment_401k_Quarterly_Statement_2015-12-31.pdf"
+        var contentDisposition = jqXHR.getResponseHeader('content-disposition');
+        var found = contentDisposition.match(/(Betterment.*?)\.pdf/);
+        resolve(found[1] + '.csv');
+      });
+    });
+  } else {
+    var found = pdfUrl.match(transactionPdfNameRe);
+    if(found) {
+      return Promise.resolve(found[1] + '.csv');
+    } else {
+      return Promise.resolve('transactions.csv');
+    }
+  }
+}
+
+function createCsvUrl(csvBlob, pdfUrl, filename) {
+  var a = document.createElement('a');
+  a.href = window.URL.createObjectURL(csvBlob);
+  a.download = filename;
+  a.textContent = '.csv';
+  a.style = 'font-size: 12px';
+  return a;
+}

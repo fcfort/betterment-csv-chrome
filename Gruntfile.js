@@ -4,6 +4,23 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    concat: {
+      options: {
+        separator: ';',
+      },
+      pdf: {
+        src: ['app/libs/pdf.worker.js'],
+        dest: 'app/dist/pdf.worker.js'
+      },
+      icon: {
+        src: ['app/src/show-page-icon.js'],
+        dest: 'app/dist/icon.js'
+      },
+      libs: {
+        src: ['app/libs/*.js', '!app/libs/pdf.worker.js'],
+        dest: 'app/dist/libs.js'
+      },
+    },    
     browserify: {
       dist: {
         src: 'app/src/pdf-to-csv.js',
@@ -38,9 +55,10 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-crx');
   grunt.loadNpmTasks('grunt-browserify');
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
-  grunt.registerTask('builddev', ['browserify']);
+  grunt.registerTask('builddev', ['concat', 'browserify']);
   grunt.registerTask('build', ['browserify', 'uglify']);
   grunt.registerTask('package', ['browserify', 'uglify', 'crx']);
 };
