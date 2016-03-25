@@ -8,28 +8,29 @@
   "homepage_url": "https://github.com/fcfort/betterment-csv-chrome",
 
   "icons": {
-    "128": "images/icon128.png"
+    "128": "icon128.png"
   },
 
   "content_scripts": [
     {
       "run_at": "document_start",
       "matches": ["https://wwws.betterment.com/app*"],
-      "js": [        
-        "dist/libs.js",
-        "dist/main.js"     
+      "js": [
+        "load-pdf.js",
+        "libs.js",
+        "main.js"
       ]
     }
   ],
 
  "background": {
-    "scripts": ["dist/icon.js"],
+    "scripts": ["icon.js"],
     "persistent": false
   }, 
 
   "page_action": {
     "default_icon": {
-      "38": "images/icon38.png"
+      "38": "icon38.png"
     },
     "default_title": "Betterment PDF to CSV exporter"
   },
@@ -37,6 +38,6 @@
   "permissions": ["declarativeContent"],
 
   "web_accessible_resources": [
-    "dist/pdf.worker.js"
+    "pdf.worker.js"
   ]
 }
