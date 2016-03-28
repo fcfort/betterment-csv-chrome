@@ -4,23 +4,21 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    clean: ['dist/app/'],
+    mochaTest: {
+      test: {
+        options: { reporter: 'spec' },
+        src: ['test/**/*.js']
+      }
+    },
+    clean: {
+      options: { 'force': true },
+      dist: ['dist/app/'],
+    },
     concat: {
-      options: {
-        separator: ';',
-      },
-      loadpdf: {
-        src: ['app/src/load-pdf.js'],
-        dest: 'dist/app/load-pdf.js'
-      },
-      pdf: {
-        src: ['app/libs/pdf.worker.js'],
-        dest: 'dist/app/pdf.worker.js'
-      },
-      icon: {
-        src: ['app/src/show-page-icon.js'],
-        dest: 'dist/app/icon.js'
-      },
+      options: { separator: ';', },
+      loadpdf: { src: ['app/src/load-pdf.js'], dest: 'dist/app/load-pdf.js' },
+      pdf: { src: ['app/libs/pdf.worker.js'], dest: 'dist/app/pdf.worker.js' },
+      icon: { src: ['app/src/show-page-icon.js'], dest: 'dist/app/icon.js' },
       libs: {
         src: [
           'app/libs/mutation-summary.js',
@@ -28,10 +26,7 @@ module.exports = function(grunt) {
         ],
         dest: 'dist/app/libs.js'
       },
-      manifest: {
-        src: ['app/manifest.json'],
-        dest: 'dist/app/manifest.json'
-      },
+      manifest: { src: ['app/manifest.json'], dest: 'dist/app/manifest.json' },
     },
     copy: {
       dist: {
@@ -46,16 +41,10 @@ module.exports = function(grunt) {
       },
     },
     browserify: {
-      main: {
-        src: 'app/src/pdf-to-csv.js',
-        dest: 'dist/app/main.js'
-      },
       options: {
-        ignore: [
-          'entry?name=[hash]-worker.js!./pdf.worker.js',
-          'node-ensure',
-        ],
+        ignore: [ 'entry?name=[hash]-worker.js!./pdf.worker.js', 'node-ensure', ],
       },
+      main: { src: 'app/src/pdf-to-csv.js', dest: 'dist/app/main.js' },
     },
     uglify: {
       dist: {
@@ -69,9 +58,7 @@ module.exports = function(grunt) {
     },
     imagemin: {
       dist: {
-        options: {
-          optimizationLevel: 3,
-        },
+        options: { optimizationLevel: 3, },
         files: {
           'dist/app/icon38.png': 'app/images/icon38.png',
           'dist/app/icon128.png': 'app/images/icon128.png',
@@ -80,14 +67,12 @@ module.exports = function(grunt) {
     },
     crx: {
       extension: {
-        'src': [
-          'dist/app/*',
-        ],
-        'dest': 'dist/builds', // This is required or it will error.
-        'zipDest': 'dist/builds',
         'options': {
           'privateKey': grunt.option('privateKey'),
         },
+        'src': [ 'dist/app/*', ],
+        'dest': 'dist/builds', // This is required or it will error.
+        'zipDest': 'dist/builds',
       }
     },
     dalek: {
@@ -109,15 +94,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-crx');
   grunt.loadNpmTasks('grunt-dalek');
+  grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-newer');
 
-  grunt.registerTask(
-    'build',
-    ['clean', 'concat', 'browserify', 'uglify', 'imagemin']);
-  grunt.registerTask(
-    'builddev',
-    ['clean', 'concat', 'browserify', 'copy']);
-  grunt.registerTask(
-    'package',
-    ['clean', 'concat', 'browserify', 'uglify', 'imagemin', 'crx']);
+  var commonTasks = ['mochaTest', 'clean', 'concat', 'browserify'];
+  var minifyingTasks = ['uglify', 'imagemin'];
+
+  grunt.registerTask('builddev', [].concat(commonTasks, 'copy'));
+  grunt.registerTask('build', [].concat(commonTasks, minifyingTasks));
+  grunt.registerTask('package', [].concat(commonTasks, minifyingTasks, 'crx'));
 };
