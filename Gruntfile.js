@@ -85,6 +85,21 @@ module.exports = function(grunt) {
         dalekfile: false,
       }
     },
+    webstore_upload: {
+      accounts: {
+        default: { //account under this section will be used by default
+          publish: false, //publish item right after uploading. default false
+          client_id: "<%= secret.client_id %>", // "000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@developer.gserviceaccount.com"
+          client_secret: "<%= secret.client_secret %>", // "xxxxxxxxxxxxx-xxxxxxxxxx"
+        }
+      },
+      extensions: {
+        pdf_to_csv: {
+          appID: 'jbneodpofmnammepmnejgkacdbjojcgn', // required
+          zip: 'dist/betterment-csv-chrome-0.0.3.zip' // required
+        }
+      }
+    },
   });
 
   grunt.loadNpmTasks('grunt-browserify');
@@ -97,6 +112,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-dalek');
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-newer');
+  grunt.loadNpmTasks('grunt-webstore-upload');
 
   var commonTasks = ['mochaTest', 'clean', 'concat', 'browserify'];
   var minifyingTasks = ['uglify', 'imagemin'];

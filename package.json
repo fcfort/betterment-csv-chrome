@@ -27,6 +27,7 @@
     "grunt-dalek": "^0.2.0",
     "grunt-mocha-test": "^0.12.7",
     "grunt-newer": "^1.1.2",
+    "grunt-webstore-upload": "^0.8.10",
     "mocha": "^2.4.5",
     "pdfjs-dist": "^1.4.135",
     "should": "^8.2.2",
