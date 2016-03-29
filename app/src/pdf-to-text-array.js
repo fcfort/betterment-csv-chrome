@@ -1,6 +1,4 @@
-var PDFJS = require('pdfjs-dist');
-
-// PDFJS.workerSrc = chrome.extension.getURL("pdf.worker.js");
+var PDFJS = require('pdfjs-dist/build/pdf.js');
 
 /**
  * Takes a PDF url and returns an array of arrays. Each row in the array is a

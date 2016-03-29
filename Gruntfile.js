@@ -6,7 +6,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     mochaTest: {
       test: {
-        options: { reporter: 'spec' },
+        options: { reporter: 'spec', quiet: true },
         src: ['test/**/*.js']
       }
     },
@@ -17,7 +17,6 @@ module.exports = function(grunt) {
     concat: {
       options: { separator: ';', },
       loadpdf: { src: ['app/src/load-pdf.js'], dest: 'dist/app/load-pdf.js' },
-      pdf: { src: ['app/libs/pdf.worker.js'], dest: 'dist/app/pdf.worker.js' },
       icon: { src: ['app/src/show-page-icon.js'], dest: 'dist/app/icon.js' },
       libs: {
         src: [
@@ -45,6 +44,8 @@ module.exports = function(grunt) {
         ignore: [ 'entry?name=[hash]-worker.js!./pdf.worker.js', 'node-ensure', ],
       },
       main: { src: 'app/src/pdf-to-csv.js', dest: 'dist/app/main.js' },
+      worker_path: { src: 'app/src/load-pdf.js', dest: 'dist/app/load-pdf.js' },
+      worker: { src: 'app/src/pdf.worker.js', dest: 'dist/app/pdf.worker.js' },
     },
     uglify: {
       dist: {
