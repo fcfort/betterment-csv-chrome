@@ -1,6 +1,12 @@
 'use strict';
 
 module.exports = function(grunt) {
+  // Load secrets file if present
+  var secrets = {};
+  if (grunt.option('secretsFile')) {
+    secrets = grunt.file.readJSON(grunt.option('secretsFile'));
+  }
+
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -89,14 +95,14 @@ module.exports = function(grunt) {
       accounts: {
         default: { //account under this section will be used by default
           publish: false, //publish item right after uploading. default false
-          client_id: "<%= secret.client_id %>", // "000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@developer.gserviceaccount.com"
-          client_secret: "<%= secret.client_secret %>", // "xxxxxxxxxxxxx-xxxxxxxxxx"
+          client_id: secrets.client_id,
+          client_secret: secrets.client_secret
         }
       },
       extensions: {
         pdf_to_csv: {
           appID: 'jbneodpofmnammepmnejgkacdbjojcgn', // required
-          zip: 'dist/betterment-csv-chrome-0.0.3.zip' // required
+          zip: 'dist/builds/betterment-csv-chrome-0.0.3.zip' // required
         }
       }
     },

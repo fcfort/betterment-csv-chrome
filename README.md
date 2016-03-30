@@ -21,6 +21,12 @@ Source Code: [github.com/fcfort/betterment-csv-chrome](https://github.com/fcfort
 
 `grunt package --privateKey ../relative/path/to/key.pem`
 
+## Uploading
+
+`grunt webstore_upload --secretsFile ../relative/path/to/secrets.json`
+
+Accept the OAuth2 prompt that opens in your browser.
+
 ## Testing
 
 This project uses Mocha for testing. Run tests using `mocha`. Requires node.js to be installed.
