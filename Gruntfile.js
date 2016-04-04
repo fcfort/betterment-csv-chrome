@@ -102,7 +102,7 @@ module.exports = function(grunt) {
       extensions: {
         pdf_to_csv: {
           appID: 'jbneodpofmnammepmnejgkacdbjojcgn', // required
-          zip: 'dist/builds/betterment-csv-chrome-0.0.3.zip' // required
+          zip: 'dist/builds/betterment-csv-chrome-0.0.4.zip' // required
         }
       }
     },
@@ -126,4 +126,5 @@ module.exports = function(grunt) {
   grunt.registerTask('builddev', [].concat(commonTasks, 'copy'));
   grunt.registerTask('build', [].concat(commonTasks, minifyingTasks));
   grunt.registerTask('package', [].concat(commonTasks, minifyingTasks, 'crx'));
+  grunt.registerTask('packagedev', [].concat(commonTasks, 'copy', 'crx')); // hack to fix issue #29.
 };
