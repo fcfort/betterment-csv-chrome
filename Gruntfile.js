@@ -10,12 +10,24 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    jasmine: {
+      browserifyTest: {
+        options: {
+          specs: 'test/**/*-spec.js',
+        }
+      }
+    },
     mochaTest: {
       test: {
         options: { reporter: 'spec', quiet: true },
-        src: ['test/**/*.js']
+        src: ['test/**/*-test.js']
       }
     },
+    karma: {
+      unit: {
+        configFile: 'karma.conf.js'
+      }
+    },    
     clean: {
       options: { 'force': true },
       dist: ['dist/app/'],
@@ -52,6 +64,7 @@ module.exports = function(grunt) {
       main: { src: 'app/src/pdf-to-csv.js', dest: 'dist/app/main.js' },
       worker_path: { src: 'app/src/load-pdf.js', dest: 'dist/app/load-pdf.js' },
       worker: { src: 'app/src/pdf.worker.js', dest: 'dist/app/pdf.worker.js' },
+      karma: { src: 'test/karma/jasminePdfSpec.js', dest: 'test/karma/build/karma-spec.js' },
     },
     uglify: {
       dist: {
@@ -113,9 +126,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-imagemin');
+  grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-crx');
   grunt.loadNpmTasks('grunt-dalek');
+  grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-newer');
   grunt.loadNpmTasks('grunt-webstore-upload');
@@ -127,4 +142,6 @@ module.exports = function(grunt) {
   grunt.registerTask('build', [].concat(commonTasks, minifyingTasks));
   grunt.registerTask('package', [].concat(commonTasks, minifyingTasks, 'crx'));
   grunt.registerTask('packagedev', [].concat(commonTasks, 'copy', 'crx')); // hack to fix issue #29.
+  grunt.registerTask('karmaTest', [].concat('browserify:karma', 'karma'));
+
 };
