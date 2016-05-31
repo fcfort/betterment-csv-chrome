@@ -29,7 +29,13 @@ Accept the OAuth2 prompt that opens in your browser.
 
 ## Testing
 
-This project uses Mocha for testing. Run tests using `mocha`. Requires node.js to be installed.
+### Unit tests
+
+`grunt mochaTest`
+
+### Integration tests
+
+`grunt karmaTest --testPdfDir ../relative/path/to/test/pdfs/and/csvs`
 
 ## Libraries
 

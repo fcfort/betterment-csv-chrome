@@ -1,14 +1,43 @@
 var pdfToTextArray = require('../../app/src/pdf-to-text-array');
+var pdfparser = require('../../app/src/betterment-pdf-array-parser');
+var tran2csv = require('../../app/src/transactions-to-csv');
 
-describe("A suite", function() {
-  it("contains spec with an expectation", function(done) {
-  	var promise = pdfToTextArray('base/a.pdf');
-  	promise.then(function(txns) {
-  	  console.log(txns); 
-  	  done();
-    }, function(e) {
-      console.log(e);
-    });
-    expect(true).toBe(true);
+describe("PDF Parsing to CSV", function() {
+  var pdftoArray = new pdfparser.BettermentPdfArrayParser();
+
+  it("parses pdf and matches csv", function(done) {
+    for (var file in window.__karma__.files) {  // Hack to iterate over served files.
+      if(file.endsWith('pdf')) {
+        (function(pdfFile) {  // Need closure to capture file variable.
+      	  pdfToTextArray(pdfFile).then(function(lines) {          
+            // Actual
+            var transactions = pdftoArray.parse(lines);
+            var csvBlob = tran2csv.TransactionsToCsv(transactions);
+            var actualCsvResults = blobToString(csvBlob);
+
+            // Expected
+            var expectedCsvUri = pdfFile + '.csv';
+            var expectedCsvResults = urlToString(expectedCsvUri);
+
+            expect(actualCsvResults).toBe(expectedCsvResults);
+      	    done();
+          });
+        })(file);
+      }
+    }
   });
 });
+
+function blobToString(b) {
+  var uri = URL.createObjectURL(b);
+  var result = urlToString(uri);
+  URL.revokeObjectURL(uri);
+  return result;
+}
+
+function urlToString(uri) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', uri, false);
+  xhr.send();
+  return xhr.response;
+}

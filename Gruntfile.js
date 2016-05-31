@@ -7,8 +7,15 @@ module.exports = function(grunt) {
     secrets = grunt.file.readJSON(grunt.option('secretsFile'));
   }
 
+  // Set pdf test file dir
+  var testPdfDir = {};
+  if (grunt.option('testPdfDir')) {
+    testPdfDir = grunt.option('testPdfDir');
+  }
+
   // Project configuration.
   grunt.initConfig({
+    // TODO: Use pkg data to set version of build
     pkg: grunt.file.readJSON('package.json'),
     jasmine: {
       browserifyTest: {
@@ -31,6 +38,7 @@ module.exports = function(grunt) {
     clean: {
       options: { 'force': true },
       dist: ['dist/app/'],
+      karma: ['test/karma/build/'],
     },
     concat: {
       options: { separator: ';', },
@@ -54,6 +62,16 @@ module.exports = function(grunt) {
             src: ['app/images/*', 'app/manifest.json'],
             dest: 'dist/app/'
           },
+        ],
+      },
+      karma: {
+        files: [
+          {
+            expand: true,
+            flatten: true,            
+            src: testPdfDir + '/**/*.pdf*',
+            dest: 'test/karma/build'
+          }, 
         ],
       },
     },
@@ -138,10 +156,10 @@ module.exports = function(grunt) {
   var commonTasks = ['mochaTest', 'clean', 'concat', 'browserify'];
   var minifyingTasks = ['uglify', 'imagemin'];
 
-  grunt.registerTask('builddev', [].concat(commonTasks, 'copy'));
+  grunt.registerTask('builddev', [].concat(commonTasks, 'copy:dist'));
   grunt.registerTask('build', [].concat(commonTasks, minifyingTasks));
   grunt.registerTask('package', [].concat(commonTasks, minifyingTasks, 'crx'));
-  grunt.registerTask('packagedev', [].concat(commonTasks, 'copy', 'crx')); // hack to fix issue #29.
-  grunt.registerTask('karmaTest', [].concat('browserify:karma', 'karma'));
+  grunt.registerTask('packagedev', [].concat(commonTasks, 'copy:dist', 'crx')); // hack to fix issue #29.
+  grunt.registerTask('karmaTest', [].concat('clean:karma', 'copy:karma', 'browserify:karma', 'karma'));
 
 };
