@@ -15,7 +15,7 @@ BettermentPdfArrayParser.prototype.parse = function(array){
   
   array.forEach(function(line) {
     // Two goal cases, one for everything but quarterly statements
-  	if(!goal && line.length == 1 && line[0].endsWith("Goal")) {
+  	if(!goal && line.length == 1 && line[0].endsWith('Goal')) {
   		goal = line[0];
   	}
     // Another for quarterly brokerage statements, which look like "BUILD WEALTH"
@@ -32,7 +32,17 @@ BettermentPdfArrayParser.prototype.parse = function(array){
     }
 
     // See if we're in a transaction section
-    if(line.length > 0 && line[0] == 'Portfolio/Fund') {
+    /* 
+     * 3 kinds of header rows, one in which there are superscripts on the column (line[0]),
+     * and another in which there are no superscripts (or footnotes) on the row (line[2]),
+     * and for the new (as of Q12016) quarterly 401(k) PDFs which have CAPITAL LETTERS.
+     */
+    if(line.length > 0 && (
+        line[0] == 'Portfolio/Fund' || 
+        line[2] == 'Portfolio/Fund' ||
+        line[0] == 'PORTFOLIO/FUND'
+      )
+    ) {
       afterHeaderRow = true;
     }
 
