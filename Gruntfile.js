@@ -133,7 +133,7 @@ module.exports = function(grunt) {
       extensions: {
         pdf_to_csv: {
           appID: 'jbneodpofmnammepmnejgkacdbjojcgn', // required
-          zip: 'dist/builds/betterment-csv-chrome-0.0.4.zip' // required
+          zip: 'dist/builds/betterment-csv-chrome-0.0.5.zip' // required
         }
       }
     },

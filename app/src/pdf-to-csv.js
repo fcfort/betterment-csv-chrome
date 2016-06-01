@@ -9,7 +9,9 @@ var transactionPdfStrings = [
   'Betterment_Dividend_Reinvestment_',
   'Betterment_Quarterly_Statement',
   'Betterment_Account_Transfer_From_',
-  'Betterment_Account_Transfer_To_'
+  'Betterment_Account_Transfer_To_',
+  'Betterment_Position_Only_Transfer_All_From_',
+  'Betterment_Position_Only_Transfer_To_'
 ];
 
 function createTransactionRegex() {

@@ -27,18 +27,18 @@ BettermentPdfArrayParser.prototype.parse = function(array){
 
     // Another case for quarterly 401(k) statements
     // This is currently a hack due to issue #15
-    if(line.length == 3 && line[2].match(/^(?:Traditional|Roth) 401\(k\)$/)) {      
+    if(line.length == 3 && line[2].match(/^(?:Traditional|Roth) 401\(k\)$/)) {
       goal = line[2];
     }
 
     // See if we're in a transaction section
-    /* 
+    /*
      * 3 kinds of header rows, one in which there are superscripts on the column (line[0]),
      * and another in which there are no superscripts (or footnotes) on the row (line[2]),
      * and for the new (as of Q12016) quarterly 401(k) PDFs which have CAPITAL LETTERS.
      */
     if(line.length > 0 && (
-        line[0] == 'Portfolio/Fund' || 
+        line[0] == 'Portfolio/Fund' ||
         line[2] == 'Portfolio/Fund' ||
         line[0] == 'PORTFOLIO/FUND'
       )
