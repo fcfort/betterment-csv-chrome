@@ -11,11 +11,6 @@ describe("PDF Parsing to CSV", function() {
         it("Correctly parses pdf " + testFile, function(done) {
           (function(pdfFile) {  // Need closure to capture file variable.
             pdfToTextArray(pdfFile).then(function(lines) {
-              console.log('Got lines:', lines);
-              for (var i = 0; i < lines.length; i++) {
-                console.log(lines[i]);
-              }
-
               // Actual
               var transactions = pdftoArray.parse(lines);
 

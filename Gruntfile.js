@@ -133,7 +133,7 @@ module.exports = function(grunt) {
       extensions: {
         pdf_to_csv: {
           appID: 'jbneodpofmnammepmnejgkacdbjojcgn', // required
-          zip: 'dist/builds/betterment-csv-chrome-0.0.5.zip' // required
+          zip: 'dist/builds/betterment-csv-chrome-0.0.6.zip' // required
         }
       }
     },
@@ -153,7 +153,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-newer');
   grunt.loadNpmTasks('grunt-webstore-upload');
 
-  var commonTasks = ['mochaTest', 'clean', 'concat', 'browserify'];
+  var commonTasks = ['mochaTest', 'karmaTest', 'clean', 'concat', 'browserify'];
   var minifyingTasks = ['uglify', 'imagemin'];
 
   grunt.registerTask('builddev', [].concat(commonTasks, 'copy:dist'));

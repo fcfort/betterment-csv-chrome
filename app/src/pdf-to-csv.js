@@ -82,5 +82,6 @@ function createCsvUrl(csvBlob, pdfUrl, filename) {
   a.download = filename;
   a.textContent = '.csv';
   a.style = 'font-size: 12px';
+  a.setAttribute('data-no-toggle', 'true');
   return a;
 }

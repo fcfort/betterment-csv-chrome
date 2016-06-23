@@ -19,7 +19,7 @@ Source Code: [github.com/fcfort/betterment-csv-chrome](https://github.com/fcfort
 
 ## Packaging
 
-`grunt packagedev --privateKey ../relative/path/to/key.pem`
+`grunt packagedev --testPdfDir ../relative/path/to/test/pdfs/and/csvs --privateKey ../relative/path/to/key.pem`
 
 ## Uploading
 
