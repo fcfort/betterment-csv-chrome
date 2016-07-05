@@ -26,7 +26,7 @@ module.exports = function(grunt) {
     },
     mochaTest: {
       test: {
-        options: { reporter: 'spec', quiet: true },
+        options: { reporter: 'spec', quiet: false },
         src: ['test/**/*-test.js']
       }
     },
@@ -133,7 +133,7 @@ module.exports = function(grunt) {
       extensions: {
         pdf_to_csv: {
           appID: 'jbneodpofmnammepmnejgkacdbjojcgn', // required
-          zip: 'dist/builds/betterment-csv-chrome-0.0.6.zip' // required
+          zip: 'dist/builds/betterment-csv-chrome-0.0.7.zip' // required
         }
       }
     },
@@ -147,7 +147,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-crx');
-  grunt.loadNpmTasks('grunt-dalek');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-newer');

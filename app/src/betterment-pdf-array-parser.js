@@ -31,6 +31,14 @@ BettermentPdfArrayParser.prototype.parse = function(array){
       goal = line[2];
     }
 
+    // Case #4 - New taxable account statements
+    // Ex.: BUILD WEALTH (ACCT # 2345234752908347)
+    if(line.length == 1 && line[0].match(/^[A-Z ]+ \(ACCT # \d+\)$/)) {
+      var goalMatch = /(^[A-Z ]+) \(ACCT # \d+\)$/.exec(line[0])[1];
+      // var goalMatch = line[0];
+      goal = toTitleCase(goalMatch) + ' Goal';
+    }
+
     // See if we're in a transaction section
     /*
      * 3 kinds of header rows, one in which there are superscripts on the column (line[0]),
@@ -46,21 +54,30 @@ BettermentPdfArrayParser.prototype.parse = function(array){
       afterHeaderRow = true;
     }
 
-    // If we're in a transaction activity section
     if(afterHeaderRow) {
+      //console.log('Line: ' + line);
+      //console.log('After header, date:' + date + ' desc:' + descriptionArray + ' isTransactionLine:' + isTransactionLine + ' isDescriptionDone:' + isDescriptionDone);
+
+      // Seeing a date after the header row is when we know we are in a transaction activity section.
+      // If this transaction contains a date & description, consume & store them
+      if(line[0].match(BettermentPdfArrayParser.bettermentDateRe)) {
+          date = parseBettermentDate(line.shift());
+          // Sometimes dates appear on their own on a line so we don't always want to grab the rest.
+          if(line.length > 0) {
+            descriptionArray = [line.shift()];
+          } else {
+            descriptionArray = [];
+          }
+          isDescriptionDone = false;
+      }
+
       var isTransactionLine = line.some(function(str) {
         return str.toLowerCase().startsWith("stocks / ") || str.toLowerCase().startsWith("bonds / ");
       });
 
       // If the line contains a transaction
       if(isTransactionLine) {
-        // If this transaction contains a date & description, consume & store them
-        if(line[0].match(BettermentPdfArrayParser.bettermentDateRe)) {
-          date = parseBettermentDate(line.shift());
-          descriptionArray = [line.shift()];
-        }
-        
-        // Now that we are using the description, stop accumulating more description fields.
+        // Now that we are in a transaction, stop accumulating more description fields.
         isDescriptionDone = true;
 
         ticker = line[0].split(" / ")[1];
@@ -77,19 +94,9 @@ BettermentPdfArrayParser.prototype.parse = function(array){
           amount: amount,
           quantity: quantity,
         });     
-      } else {
-        if(date && !isDescriptionDone) {
+      } else if(date && !isDescriptionDone) {
           // Add description items while we have a date but not a transaction
           Array.prototype.push.apply(descriptionArray, line);
-        } else {
-          if(line.length == 1 && line[0].match(BettermentPdfArrayParser.bettermentDateRe)) {
-            // Create a date if we're not in a transaction and we haven't found a date before
-            date = parseBettermentDate(line[0]);
-            // Start new description            
-            descriptionArray = [];
-            isDescriptionDone = false;
-          }
-        }
       }
     }
   });

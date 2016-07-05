@@ -2,6 +2,8 @@ var pdfToTextArray = require('../../app/src/pdf-to-text-array');
 var pdfparser = require('../../app/src/betterment-pdf-array-parser');
 var tran2csv = require('../../app/src/transactions-to-csv');
 
+var debug = false;
+
 describe("PDF Parsing to CSV", function() {
   var pdftoArray = new pdfparser.BettermentPdfArrayParser();
 
@@ -11,8 +13,20 @@ describe("PDF Parsing to CSV", function() {
         it("Correctly parses pdf " + testFile, function(done) {
           (function(pdfFile) {  // Need closure to capture file variable.
             pdfToTextArray(pdfFile).then(function(lines) {
+              if(debug) {
+                for(var i = 0; i < lines.length; i++) {
+                  console.log('Line:' + i + ' ' + lines[i]);
+                }
+              }
+
               // Actual
               var transactions = pdftoArray.parse(lines);
+
+              if(debug) {
+                for(var i = 0; i < transactions.length; i++) {
+                  console.log('Txns:' + i + ' ' + JSON.stringify(transactions[i]));
+                }
+              }
 
               var csvBlob = tran2csv.TransactionsToCsv(transactions);
 
@@ -22,7 +36,7 @@ describe("PDF Parsing to CSV", function() {
               var expectedCsvUri = pdfFile + '.csv';
               var expectedCsvResults = urlToString(expectedCsvUri);
 
-              expect(actualCsvResults).toBe(expectedCsvResults);
+              expect(toUnixLineEndings(actualCsvResults)).toBe(toUnixLineEndings(expectedCsvResults));
               done();
             });
           })(testFile);
@@ -31,6 +45,15 @@ describe("PDF Parsing to CSV", function() {
     }
   }
 });
+
+/**
+ * This is needed so tests work on both windows and unix. The csv is always retured
+ * with line endings of the host system but git pulls down the files using unix
+ * line endings.
+ */
+function toUnixLineEndings(s) {
+  return s.replace(/\r\n/g,'\n');
+}
 
 function blobToString(b) {
   var uri = URL.createObjectURL(b);
