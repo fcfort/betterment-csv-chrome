@@ -39,6 +39,7 @@ module.exports = function(grunt) {
       options: { 'force': true },
       dist: ['dist/app/'],
       karma: ['test/karma/build/'],
+      crx: ['dist/builds/*.crx'],
     },
     concat: {
       options: { separator: ';', },
@@ -152,13 +153,21 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-newer');
   grunt.loadNpmTasks('grunt-webstore-upload');
 
-  var commonTasks = ['mochaTest', 'karmaTest', 'clean', 'concat', 'browserify'];
+  var commonTasks = [
+      'mochaTest',
+      'clean:karma',
+      'karmaTest',
+      'clean:dist',
+      'concat',
+      'browserify'
+  ];
   var minifyingTasks = ['uglify', 'imagemin'];
+  var makeCrxZip = ['crx', 'clean:crx'];
 
   grunt.registerTask('builddev', [].concat(commonTasks, 'copy:dist'));
   grunt.registerTask('build', [].concat(commonTasks, minifyingTasks));
-  grunt.registerTask('package', [].concat(commonTasks, minifyingTasks, 'crx'));
-  grunt.registerTask('packagedev', [].concat(commonTasks, 'copy:dist', 'crx')); // hack to fix issue #29.
+  grunt.registerTask('package', [].concat(commonTasks, minifyingTasks, makeCrxZip));
+  grunt.registerTask('packagedev', [].concat(commonTasks, 'copy:dist', makeCrxZip)); // hack to fix issue #29.
   grunt.registerTask('karmaTest', [].concat('clean:karma', 'copy:karma', 'browserify:karma', 'karma'));
 
 };
