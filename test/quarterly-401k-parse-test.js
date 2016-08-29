@@ -162,7 +162,7 @@ describe('Betterment PDF Parsing', function() {
         createTransaction("12/30/2015","Dividend","VEA","22.55","22.55", "Traditional 401(k)"),
       ];
 
-      assert.deepEqual(expectedTransactions, transactions);
+      assert.deepEqual(transactions, expectedTransactions);
     });
   });
 });

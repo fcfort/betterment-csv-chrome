@@ -39,12 +39,12 @@ describe('Betterment PDF Parsing', function() {
 		var transactions = pdfParser.parse(testPdf);
 
 		it('should parse negative amounts correctly', function() {
-			assert.equal(1, transactions.length);
-			assert.equal("-1000.68", transactions[0].amount);
+			assert.equal(transactions.length, 1);
+			assert.equal(transactions[0].amount, "-1000.68");
 		});
 
 		it('should return negative quantities with negative amounts', function() {
-			assert.equal("-10.471746", transactions[0].quantity);
+			assert.equal(transactions[0].quantity, "-10.471746");
 		});		
 	});
 
@@ -122,7 +122,7 @@ describe('Betterment PDF Parsing', function() {
 				tran.description = 'Wire for 401(k) Plan Conversion';
 				tran.date = new Date('Nov 17 2015');
 			});
-			assert.deepEqual(expectedTransactions, transactions);
+			assert.deepEqual(transactions, expectedTransactions);
 		});
 
 	});
@@ -192,7 +192,7 @@ describe('Betterment PDF Parsing', function() {
 				tran.description = '1/29/2016 Payroll Contribution';
 				tran.date = new Date('Feb 3 2016');
 			});
-			assert.deepEqual(expectedTransactions, transactions);
+			assert.deepEqual(transactions, expectedTransactions);
 		});
 
 	});
@@ -302,7 +302,7 @@ describe('Betterment PDF Parsing', function() {
 		var transactions = pdfParser.parse(contributionPdf);
 		
 		it('should return the right number of transactions', function () {
-			assert.equal(10, transactions.length);
+			assert.equal(transactions.length, 10);
 		});
 
  		it('should return the right account name', function () {
@@ -313,14 +313,14 @@ describe('Betterment PDF Parsing', function() {
 
  		it('should return the right description', function () {
  			transactions.forEach(function(tran) {
- 			 	assert.equal("Automatic Deposit", tran.description);
+ 			 	assert.equal(tran.description, "Automatic Deposit");
 			});
 		});
 
  		it('should return the right date', function () {
  			var expectedDate = new Date(2016, 1, 19); 
  			transactions.forEach(function(tran) {
- 				assert.equal(expectedDate.getTime(), tran.date.getTime());
+ 				assert.equal(tran.date.getTime(), expectedDate.getTime());
 			});
 		});	 			 
 
@@ -329,8 +329,8 @@ describe('Betterment PDF Parsing', function() {
 				return tran.ticker;
 			});
 			assert.deepEqual(
-				["VEA", "VTI", "VTV", "VOE", "VBR", "VWO", "MUB", "LQD", "BNDX", "VWOB"],
-				actualTickers
+				actualTickers,
+				["VEA", "VTI", "VTV", "VOE", "VBR", "VWO", "MUB", "LQD", "BNDX", "VWOB"]
 			);
 		});
 
@@ -339,8 +339,8 @@ describe('Betterment PDF Parsing', function() {
 				return tran.price;
 			});
 			assert.deepEqual(
-				["33.56", "96.96", "77.10", "79.37", "91.18", "30.65", "111.71", "113.87", "53.85", "74.06"],
-				actualPrices
+				actualPrices,
+				["33.56", "96.96", "77.10", "79.37", "91.18", "30.65", "111.71", "113.87", "53.85", "74.06"]
 			);
 		});		
 
@@ -349,8 +349,8 @@ describe('Betterment PDF Parsing', function() {
 				return tran.amount;
 			});
 			assert.deepEqual(
-				["42.02", "16.11", "14.86", "4.48", "3.71", "5.84", "7.29", "0.85", "2.96", "1.88"],
-				actualAmounts
+				actualAmounts,
+				["42.02", "16.11", "14.86", "4.48", "3.71", "5.84", "7.29", "0.85", "2.96", "1.88"]
 			);
 		});	
 
@@ -359,9 +359,9 @@ describe('Betterment PDF Parsing', function() {
 				return tran.quantity;
 			});
 			assert.deepEqual(
+				actualQuantities,
 				["1.252086", "0.166151", "0.192737", "0.056445", "0.040689", 
-				"0.190538", "0.065258", "0.007465", "0.054968", "0.025385"],
-				actualQuantities
+				"0.190538", "0.065258", "0.007465", "0.054968", "0.025385"]
 			);
 		});			
 	});

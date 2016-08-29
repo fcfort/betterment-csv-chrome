@@ -605,7 +605,7 @@ describe('Betterment PDF Parsing', function() {
 				createTransaction("09/30/2015", "Advisory Fee", "BNDX", "77.55", "-4.55", "Build Wealth Goal")
 			];
 
-			assert.deepEqual(expectedTransactions, transactions);
+			assert.deepEqual(transactions, expectedTransactions);
 		});
 	});
 });

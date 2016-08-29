@@ -14,7 +14,7 @@ BettermentPdfArrayParser.prototype.parse = function(array){
   var isDescriptionDone = false;
   
   array.forEach(function(line) {
-    // Two goal cases, one for everything but quarterly statements
+    // Four goal cases, one for everything but quarterly statements
   	if(!goal && line.length == 1 && line[0].endsWith('Goal')) {
   		goal = line[0];
   	}
@@ -25,7 +25,7 @@ BettermentPdfArrayParser.prototype.parse = function(array){
       goal = toTitleCase(line[0]) + ' Goal';
     }
 
-    // Another case for quarterly 401(k) statements
+    // Case #3 - For quarterly 401(k) statements
     // This is currently a hack due to issue #15
     if(line.length == 3 && line[2].match(/^(?:Traditional|Roth) 401\(k\)$/)) {
       goal = line[2];
@@ -41,14 +41,16 @@ BettermentPdfArrayParser.prototype.parse = function(array){
 
     // See if we're in a transaction section
     /*
-     * 3 kinds of header rows, one in which there are superscripts on the column (line[0]),
-     * and another in which there are no superscripts (or footnotes) on the row (line[2]),
-     * and for the new (as of Q12016) quarterly 401(k) PDFs which have CAPITAL LETTERS.
+     * 4 kinds of header rows, 1) in which there are superscripts on the column (line[0]),
+     * and another 2) in which there are no superscripts (or footnotes) on the row (line[2]),
+     * and 3), for the new (as of Q12016) quarterly 401(k) PDFs which have CAPITAL LETTERS.
+     * 4) For brokerage statements generated after Aug 19.
      */
     if(line.length > 0 && (
-        line[0] == 'Portfolio/Fund' ||
-        line[2] == 'Portfolio/Fund' ||
-        line[0] == 'PORTFOLIO/FUND'
+        line[0] == 'Portfolio/Fund' || // case 1
+        line[2] == 'Portfolio/Fund' || // case 2
+        line[0] == 'PORTFOLIO/FUND' || // case 3
+        line[0] == 'Fund' // case 4
       )
     ) {
       afterHeaderRow = true;
@@ -73,14 +75,18 @@ BettermentPdfArrayParser.prototype.parse = function(array){
 
       var isTransactionLine = line.some(function(str) {
         return str.toLowerCase().startsWith("stocks / ") || str.toLowerCase().startsWith("bonds / ");
-      });
+        }) ||
+        // In order to match the Aug 19 PDF format:
+        // || /^[A-Z]{3,6}$/.test(str)
+        (line.length >= 6 && /^[A-Z]{3,4}$/.test(line[0]))
+      ;
 
       // If the line contains a transaction
       if(isTransactionLine) {
         // Now that we are in a transaction, stop accumulating more description fields.
         isDescriptionDone = true;
 
-        ticker = line[0].split(" / ")[1];
+        ticker = getTicker(line[0]);
         price = line[1].replace('$','').replace(',','');
         amount = line[3].replace('$','').replace(',','');
         quantity = (amount/price).toFixed(6);
@@ -103,6 +109,18 @@ BettermentPdfArrayParser.prototype.parse = function(array){
 
   return transactions;
 };
+
+function getTicker(tickerString) {
+  // Old format e.g. "Stocks / VTI"
+  if(tickerString.toLowerCase().startsWith('stocks / ') ||
+     tickerString.toLowerCase().startsWith('bonds / ')
+  ) {
+    return tickerString.split(" / ")[1];
+  } else {
+    // New Aug 19 format e.g. just "VTI"
+    return tickerString;
+  }
+}
 
 // http://stackoverflow.com/a/196991
 function toTitleCase(str) {
