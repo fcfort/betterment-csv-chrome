@@ -5,13 +5,14 @@ var $ = require('jquery');
 
 /* Only documents beginning with these names will be converted to .csv */
 var transactionPdfStrings = [
-  'Betterment_Deposit_',
-  'Betterment_Dividend_Reinvestment_',
-  'Betterment_Quarterly_Statement',
   'Betterment_Account_Transfer_From_',
   'Betterment_Account_Transfer_To_',
+  'Betterment_Deposit_',
+  'Betterment_Dividend_Reinvestment_',
   'Betterment_Position_Only_Transfer_All_From_',
-  'Betterment_Position_Only_Transfer_To_'
+  'Betterment_Position_Only_Transfer_To_',
+  'Betterment_Quarterly_Statement',
+  'Betterment_Rebalance',
 ];
 
 function createTransactionRegex() {
