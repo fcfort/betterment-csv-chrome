@@ -15,7 +15,7 @@ describe("PDF Parsing to CSV", function() {
             pdfToTextArray(pdfFile).then(function(lines) {
               if(debug) {
                 for(var i = 0; i < lines.length; i++) {
-                  console.log('Line:' + i + ' ' + lines[i]);
+                  console.log('Line:' + i + ' ' + JSON.stringify(lines[i]));
                 }
               }
 
