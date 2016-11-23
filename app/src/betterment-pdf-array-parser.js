@@ -90,7 +90,7 @@ function is20161111Format(pdfArray) {;
 
     if(afterHeaderRow) {
       // if new format where it's descr | date instead of date |descr, swap els
-      if(line.length == 8 && line[1].match(BettermentPdfArrayParser.bettermentDateRe)) {
+      if(line.length >= 7 && line.slice(-7, -6)[0].match(BettermentPdfArrayParser.bettermentDateRe)) {
         return true;
       }
     }
@@ -100,7 +100,7 @@ function is20161111Format(pdfArray) {;
 }
 
 
-function parse20161111Format(pdfArray) {  
+function parse20161111Format(pdfArray) {
   var goal;
   var currentDescription = [];
   var lastDate = '';
@@ -110,31 +110,42 @@ function parse20161111Format(pdfArray) {
   pdfArray.forEach(function(line) {    
     goal = parseGoal(line, goal);
 
-    if(isAfterHeaderRow(line)) {
+    if(line.length >= 2 && line.slice(-2, -1)[0] == "Shares" && line.slice(-1)[0] == "Value") {
       afterHeaderRow = true;
     }
 
     if(afterHeaderRow) {
       line.reverse();
       
+      // accumulate descr items
+      if(line.length == 1) {
+        currentDescription.push(line[0]);
+      }
+
       // transaction line if len > 6 and has $xx.xx
       if(line.length >= 6 && line[0].match(/\$[\d.,]+\.\d{2}/)) {
         if(line.length == 8) {
-          currentDescription = [line[7]];
+          currentDescription.push(line[7]);
         }
 
         if(line.length >= 7) {
           lastDate = line[6];          
         }
 
+        if(currentDescription.length > 0) {
+          lastDescription = currentDescription;
+        }
+
         transactions.push(createTransaction(
           goal,
           lastDate,
           line[5], // ticker
-          currentDescription,
+          lastDescription,
           line[4], // price
           line[2] // amount
         ));
+
+        currentDescription = [];
       }
     }
   });

@@ -47,7 +47,7 @@ describe("PDF Parsing to CSV", function() {
 });
 
 /**
- * This is needed so tests work on both windows and unix. The csv is always retured
+ * This is needed so tests work on both windows and unix. The csv is always returned
  * with line endings of the host system but git pulls down the files using unix
  * line endings.
  */
