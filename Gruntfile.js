@@ -17,6 +17,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     // TODO: Use pkg data to set version of build
     pkg: grunt.file.readJSON('package.json'),
+    manifest: grunt.file.readJSON('app/manifest.json'),
     jasmine: {
       browserifyTest: {
         options: {
@@ -69,7 +70,7 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            flatten: true,            
+            flatten: true,
             src: testPdfDir + '/**/*.pdf*',
             dest: 'test/karma/build'
           }, 
@@ -110,8 +111,7 @@ module.exports = function(grunt) {
           'privateKey': grunt.option('privateKey'),
         },
         'src': [ 'dist/app/*', ],
-        'dest': 'dist/builds', // This is required or it will error.
-        'zipDest': 'dist/builds',
+        'dest': 'dist/builds/<%= pkg.name %>-<%= manifest.version %>.zip',
       }
     },
     dalek: {
@@ -134,7 +134,7 @@ module.exports = function(grunt) {
       extensions: {
         pdf_to_csv: {
           appID: 'jbneodpofmnammepmnejgkacdbjojcgn', // required
-          zip: 'dist/builds/betterment-csv-chrome-0.0.8.zip' // required
+          zip: 'dist/builds/<%= pkg.name %>-<%= manifest.version %>.zip' // required
         }
       }
     },

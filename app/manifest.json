@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Betterment PDF to CSV exporter",
   "short_name": "Betterment PDF to CSV",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "description": "Easily download your ticker-level transactions from Betterment.com as CSV files.",
   "author": "Frank Fort <frank.c.fort@gmail.com>",
   "homepage_url": "https://github.com/fcfort/betterment-csv-chrome",

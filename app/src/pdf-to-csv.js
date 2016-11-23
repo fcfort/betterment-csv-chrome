@@ -16,12 +16,13 @@ var transactionPdfStrings = [
 ];
 
 function createTransactionRegex() {
-  // Two cases
-  // 1. app/quarterly_statements for 401k quarterly statements
-  // 2. document/blah.pdf for all other PDFs
   return new RegExp(
-    '.*?/(?:app/quarterly_statements/\\d+|document/(?:' + 
-    transactionPdfStrings.join('|') + 
+    // 1. app/quarterly_statements for 401k quarterly statements
+    '.*?/(?:app/quarterly_statements/\\d+|document/(?:' +
+    // 2. document/blah.pdf for all other PDFs
+    transactionPdfStrings.join('|') +
+    // 3. General case for all PDF types Betterment_DATE
+    "|Betterment_.*_\\d{4}-\\d{2}-\\d{2}" +
     ').*?\\.pdf)'
   );
 }
