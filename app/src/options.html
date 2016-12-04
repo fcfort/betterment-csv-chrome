@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        background-color: #fff;
+        margin: 0;
+      }
+
+      #bodyinner {
+        margin: 0;
+        width: 350px;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 13px;
+        max-height: 600px;
+        line-height: 1.8em;
+      }
+
+      #header {
+        padding: 10px 10px 5px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #000;
+      }
+
+      #hr {
+        border: solid 1px #ccc;
+        border-top: none
+      }
+
+      #settings {
+        padding: 10px;
+        color: #222;
+      }
+
+      .checkboxes label {
+        display: block;
+        white-space: nowrap;
+      }
+      .checkboxes input {
+        vertical-align: middle;
+      }
+      .checkboxes label span {
+        vertical-align: middle;
+        padding-left: 2px;
+      }
+    </style>
+  </head>
+  <body style="overflow:hidden">
+    <div id="bodyinner">
+      <div id="header">Betterment PDF to CSV options</div>
+
+      <hr id="hr">
+
+      <div id="settings">
+        <b>Export</b> PDFs as 
+
+        <form action="">
+          <div class="checkboxes">
+
+            <label for="csv">
+              <input type="checkbox" class="saveOnClick" id="csv">
+              <span>CSV</span>
+            </label>
+
+            <label for="qif">
+              <input type="checkbox" class="saveOnClick" id="qif">
+              <span>QIF</span>
+            </label>
+
+          </div>
+        </form>
+      </div>
+    </div>
+
+  <script src="options.js"></script>
+
+  </body>
+</html>

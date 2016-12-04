@@ -1,6 +1,6 @@
 var pdfToTextArray = require('../../app/src/pdf-to-text-array');
 var pdfparser = require('../../app/src/betterment-pdf-array-parser');
-var tran2csv = require('../../app/src/transactions-to-csv');
+var TransactionsToCsv = require('../../app/src/transactions-to-csv');
 
 var debug = false;
 
@@ -28,9 +28,9 @@ describe("PDF Parsing to CSV", function() {
                 }
               }
 
-              var csvBlob = tran2csv.TransactionsToCsv(transactions);
+              var csvBlob = TransactionsToCsv.convert(transactions);
 
-              var actualCsvResults = blobToString(csvBlob);
+              var actualCsvResults = csvBlob;
 
               // Expected
               var expectedCsvUri = pdfFile + '.csv';

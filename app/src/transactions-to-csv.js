@@ -1,4 +1,8 @@
-var TransactionsToCsv = function(transactions) {
+var TransactionsToCsv = function() {};
+
+TransactionsToCsv.convert = function(transactions) {
+  var lines = [];
+
   var headers = [
     'Account',
     'Date',
@@ -9,8 +13,9 @@ var TransactionsToCsv = function(transactions) {
     'Value'
   ];
 
-  var tranRows = [headers.join()];
-  tranRows = tranRows.concat(transactions.map(function(tran) {
+  lines.push([headers.join()]);
+
+  [].push.apply(lines, transactions.map(function(tran) {
     return [
       tran.account, 
       tran.date.toLocaleDateString('en-US'), 
@@ -22,15 +27,13 @@ var TransactionsToCsv = function(transactions) {
     ].join()
   }));
 
-  var tranCsv = tranRows.join('\n');
-
-  return new Blob([tranCsv], {type: 'text/csv', endings: 'native'});  
+  return lines.join('\n');
 };
 
 // For mocha testing
 var module = module || {};
 if(module && module.exports) {
-  module.exports.TransactionsToCsv = TransactionsToCsv;
+  module.exports = TransactionsToCsv;
 }
 
-module.exports.TransactionsToCsv = TransactionsToCsv;
+module.exports = TransactionsToCsv;

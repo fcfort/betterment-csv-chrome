@@ -48,7 +48,6 @@ module.exports = function(grunt) {
       icon: { src: ['app/src/show-page-icon.js'], dest: 'dist/app/icon.js' },
       libs: {
         src: [
-          'app/libs/mutation-summary.js',
           'app/libs/patch-worker.js',
         ],
         dest: 'dist/app/libs.js'
@@ -61,7 +60,11 @@ module.exports = function(grunt) {
           {
             expand: true,
             flatten: true,
-            src: ['app/images/*', 'app/manifest.json'],
+            src: [
+              'app/images/*',
+              'app/manifest.json',
+              'app/src/options.*',
+            ],
             dest: 'dist/app/'
           },
         ],
@@ -93,6 +96,7 @@ module.exports = function(grunt) {
           'dist/app/pdf.worker.js': ['dist/app/pdf.worker.js'],
           'dist/app/main.js': ['dist/app/main.js'],
           'dist/app/icon.js': ['dist/app/icon.js'],
+          'dist/app/options.js': ['dist/app/options.js'],
         }
       }
     },
@@ -153,21 +157,14 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-newer');
   grunt.loadNpmTasks('grunt-webstore-upload');
 
-  var commonTasks = [
-      'mochaTest',
-      'clean:karma',
-      'karmaTest',
-      'clean:dist',
-      'concat',
-      'browserify'
-  ];
+  var commonTasks = ['mochaTest', 'clean:dist', 'concat', 'browserify'];
   var minifyingTasks = ['uglify', 'imagemin'];
   var makeCrxZip = ['crx', 'clean:crx'];
 
   grunt.registerTask('builddev', [].concat(commonTasks, 'copy:dist'));
-  grunt.registerTask('build', [].concat(commonTasks, minifyingTasks));
-  grunt.registerTask('package', [].concat(commonTasks, minifyingTasks, makeCrxZip));
-  grunt.registerTask('packagedev', [].concat(commonTasks, 'copy:dist', makeCrxZip)); // hack to fix issue #29.
-  grunt.registerTask('karmaTest', [].concat('clean:karma', 'copy:karma', 'browserify:karma', 'karma'));
+  grunt.registerTask(
+    'karmaTest', [].concat(commonTasks, 'clean:karma', 'copy:karma', 'browserify:karma', 'karma'));  
+  grunt.registerTask(
+    'packagedev', [].concat(commonTasks, 'copy:dist', 'karmaTest', makeCrxZip)); // hack to fix issue #29.
 
 };
