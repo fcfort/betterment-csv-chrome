@@ -157,14 +157,14 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-newer');
   grunt.loadNpmTasks('grunt-webstore-upload');
 
-  var commonTasks = ['mochaTest', 'clean:dist', 'concat', 'browserify'];
-  var minifyingTasks = ['uglify', 'imagemin'];
-  var makeCrxZip = ['crx', 'clean:crx'];
-
-  grunt.registerTask('builddev', [].concat(commonTasks, 'copy:dist'));
+  // The main grunt tasks, each of which nests the previous one.
+  // build -> test -> package -> upload
   grunt.registerTask(
-    'karmaTest', [].concat(commonTasks, 'clean:karma', 'copy:karma', 'browserify:karma', 'karma'));  
+    'build', [].concat('clean:dist', 'concat', 'browserify', 'copy:dist'));
   grunt.registerTask(
-    'packagedev', [].concat(commonTasks, 'copy:dist', 'karmaTest', makeCrxZip)); // hack to fix issue #29.
-
+    'test', [].concat('build', 'mochaTest', 'clean:karma', 'copy:karma', 'browserify:karma', 'karma'));
+  grunt.registerTask(
+    'package', [].concat('build', 'test', 'copy:dist', 'crx', 'clean:crx'));
+  grunt.registerTask(
+    'upload', [].concat('build', 'test', 'package', 'webstore_upload'));  
 };
