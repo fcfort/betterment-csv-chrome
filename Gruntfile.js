@@ -173,7 +173,7 @@ module.exports = function(grunt) {
   // The main grunt tasks, each of which nests the previous one.
   // build -> test -> package -> upload
   grunt.registerTask(
-    'build', [].concat('clean:dist', 'concat', 'browserify', 'copy:dist'));
+    'build', [].concat('trimtrailingspaces', 'clean:dist', 'concat', 'browserify', 'copy:dist'));
   grunt.registerTask(
     'test', [].concat('build', 'mochaTest', 'clean:karma', 'copy:karma', 'browserify:karma', 'karma'));
   grunt.registerTask(
