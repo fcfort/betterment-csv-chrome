@@ -70,7 +70,7 @@ function handleNewAnchors(summaries) {
 
           if(outputFormatOptions.qifOutputDesired) {
             var qif = TransactionsToQif.convert(transactions);
-            $(anchorEl).before(createDataUrl(qif, 'application/qif', filename, '.qif'));            
+            $(anchorEl).before(createDataUrl(qif, 'application/qif', filename, '.qif'));
           }
         });
       });
@@ -78,7 +78,7 @@ function handleNewAnchors(summaries) {
   });
 }
 
-// Grab filename (without .pdf at the end) from PDF URL. Is a promise because we 
+// Grab filename (without .pdf at the end) from PDF URL. Is a promise because we
 // have to make an ajax call if it is a quarterly 401k PDF.
 // https://wwws.betterment.com/document/Betterment_Deposit_2016-02-18.pdf
 function getFilenamePromise(pdfUrl) {
@@ -102,7 +102,7 @@ function getFilenamePromise(pdfUrl) {
 }
 
 function createDataUrl(data, mimeType, filename, extension) {
-  var blob = new Blob([data], {type: mimeType, endings: 'native'});  
+  var blob = new Blob([data], {type: mimeType, endings: 'native'});
   var blobUrl = window.URL.createObjectURL(blob);
 
   var a = document.createElement('a');

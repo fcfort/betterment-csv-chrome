@@ -142,6 +142,18 @@ module.exports = function(grunt) {
         }
       }
     },
+    trimtrailingspaces: {
+      main: {
+        src: [
+          'app/src/**/*.js',
+          'test/**/*.js'
+        ],
+        options: {
+          filter: 'isFile',
+          encoding: 'utf8',
+        }
+      }
+    },
   });
 
   grunt.loadNpmTasks('grunt-browserify');
@@ -155,6 +167,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-newer');
+  grunt.loadNpmTasks('grunt-trimtrailingspaces');
   grunt.loadNpmTasks('grunt-webstore-upload');
 
   // The main grunt tasks, each of which nests the previous one.

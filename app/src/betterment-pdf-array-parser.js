@@ -12,7 +12,7 @@ BettermentPdfArrayParser.prototype.parse = function(array) {
   var descriptionArray = [];
   var goal;
   var isDescriptionDone = false;
-  var dateAfterTransaction = false; // assume old format (date|txn) until we detect otherwise 
+  var dateAfterTransaction = false; // assume old format (date|txn) until we detect otherwise
   var is20161111FormatBool = is20161111Format(array);
 
   if(is20161111Format(array)) {
@@ -33,7 +33,7 @@ BettermentPdfArrayParser.prototype.parse = function(array) {
         //console.log('Line: ' + line);
 
         // Seeing a date after the header row is when we know we are in a transaction activity section.
-        // If this transaction contains a date & description, consume & store them      
+        // If this transaction contains a date & description, consume & store them
         if(line[0].match(BettermentPdfArrayParser.bettermentDateRe)) {
             date = line.shift();
             // Sometimes dates appear on their own on a line so we don't always want to grab the rest.
@@ -69,7 +69,7 @@ BettermentPdfArrayParser.prototype.parse = function(array) {
         } else if(date && !isDescriptionDone) {
             // Add description items while we have a date but not a transaction
             Array.prototype.push.apply(descriptionArray, line);
-        }    
+        }
       }
     });
   }
@@ -77,7 +77,7 @@ BettermentPdfArrayParser.prototype.parse = function(array) {
 };
 
 
-/* 
+/*
  * Is new column order of descr then date
  */
 function is20161111Format(pdfArray) {;
@@ -107,7 +107,7 @@ function parse20161111Format(pdfArray) {
   var transactions = [];
   var afterHeaderRow = false;
 
-  pdfArray.forEach(function(line) {    
+  pdfArray.forEach(function(line) {
     goal = parseGoal(line, goal);
 
     if(line.length >= 2 && line.slice(-2, -1)[0] == "Shares" && line.slice(-1)[0] == "Value") {
@@ -116,7 +116,7 @@ function parse20161111Format(pdfArray) {
 
     if(afterHeaderRow) {
       line.reverse();
-      
+
       // accumulate descr items
       if(line.length == 1) {
         currentDescription.push(line[0]);
@@ -129,7 +129,7 @@ function parse20161111Format(pdfArray) {
         }
 
         if(line.length >= 7) {
-          lastDate = line[6];          
+          lastDate = line[6];
         }
 
         if(currentDescription.length > 0) {

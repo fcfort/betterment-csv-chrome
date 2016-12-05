@@ -4,7 +4,7 @@ var BettermentPdfArrayParser = require('../app/src/betterment-pdf-array-parser')
 
 describe('Betterment PDF Parsing', function() {
 	var pdfParser = new BettermentPdfArrayParser.BettermentPdfArrayParser();
-	
+
 	describe('Date formats', function() {
 		it('should parse brokerage date formats', function() {
 			var transactions = pdfParser.parse([
@@ -19,7 +19,7 @@ describe('Betterment PDF Parsing', function() {
 		it('should parse 401(k) date formats', function() {
 			var transactions = pdfParser.parse([
 				["Blah Goal"],
-				["Portfolio/Fund","Price","Shares","Value","Shares","Value"],				
+				["Portfolio/Fund","Price","Shares","Value","Shares","Value"],
 				["Nov 2nd, 2015","Blah","Stocks / MUB","$95.56","10.472","-$1,000.68","1.387","$1.23"],
 				["Dec 29th, 2015","Blah","Stocks / VTI","$95.56","10.472","-$1,000.68","1.387","$1.23"],
 			]);
@@ -45,7 +45,7 @@ describe('Betterment PDF Parsing', function() {
 
 		it('should return negative quantities with negative amounts', function() {
 			assert.equal(transactions[0].quantity, "-10.471746");
-		});		
+		});
 	});
 
 	describe('wire transfer', function() {
@@ -105,7 +105,7 @@ describe('Betterment PDF Parsing', function() {
 		]
 
 		var transactions = pdfParser.parse(wireTransferPdf);
-		
+
 		it('should return the right transactions', function () {
 			var expectedTransactions = [
 				// These quantity numbers don't match the above PDF since we're calculating them from
@@ -177,7 +177,7 @@ describe('Betterment PDF Parsing', function() {
 		];
 
 		var transactions = pdfParser.parse(four01kPdf);
-		
+
 		it('should return the right transactions', function () {
 			var expectedTransactions = [
 				{ticker: 'VTI', price: '95.56', amount: '1000.68', quantity: '10.471746'},
@@ -300,7 +300,7 @@ describe('Betterment PDF Parsing', function() {
 		];
 
 		var transactions = pdfParser.parse(contributionPdf);
-		
+
 		it('should return the right number of transactions', function () {
 			assert.equal(transactions.length, 10);
 		});
@@ -318,11 +318,11 @@ describe('Betterment PDF Parsing', function() {
 		});
 
  		it('should return the right date', function () {
- 			var expectedDate = new Date(2016, 1, 19); 
+ 			var expectedDate = new Date(2016, 1, 19);
  			transactions.forEach(function(tran) {
  				assert.equal(tran.date.getTime(), expectedDate.getTime());
 			});
-		});	 			 
+		});
 
 		it('should return the right tickers', function () {
 			var actualTickers = transactions.map(function(tran) {
@@ -342,7 +342,7 @@ describe('Betterment PDF Parsing', function() {
 				actualPrices,
 				["33.56", "96.96", "77.10", "79.37", "91.18", "30.65", "111.71", "113.87", "53.85", "74.06"]
 			);
-		});		
+		});
 
 		it('should return the right amounts', function () {
 			var actualAmounts = transactions.map(function(tran) {
@@ -352,7 +352,7 @@ describe('Betterment PDF Parsing', function() {
 				actualAmounts,
 				["42.02", "16.11", "14.86", "4.48", "3.71", "5.84", "7.29", "0.85", "2.96", "1.88"]
 			);
-		});	
+		});
 
 		it('should return the right quantities', function () {
 			var actualQuantities = transactions.map(function(tran) {
@@ -360,9 +360,9 @@ describe('Betterment PDF Parsing', function() {
 			});
 			assert.deepEqual(
 				actualQuantities,
-				["1.252086", "0.166151", "0.192737", "0.056445", "0.040689", 
+				["1.252086", "0.166151", "0.192737", "0.056445", "0.040689",
 				"0.190538", "0.065258", "0.007465", "0.054968", "0.025385"]
 			);
-		});			
+		});
 	});
 });

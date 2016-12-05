@@ -17,10 +17,10 @@ TransactionsToCsv.convert = function(transactions) {
 
   [].push.apply(lines, transactions.map(function(tran) {
     return [
-      tran.account, 
-      tran.date.toLocaleDateString('en-US'), 
+      tran.account,
+      tran.date.toLocaleDateString('en-US'),
       tran.description,
-      tran.ticker,    
+      tran.ticker,
       tran.price,
       tran.quantity,
       tran.amount

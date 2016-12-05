@@ -88,7 +88,7 @@ describe('Betterment PDF Parsing', function() {
     var transactions = parser.parse(quarterlyPdf);
 
     it('should return the right transactions', function () {
-      var expectedTransactions = [      
+      var expectedTransactions = [
         createTransaction("11/14/2016","Deposit from","VWOB","76.11","4.40", "Joint Build Wealth Goal"),
         createTransaction("11/14/2016","Deposit from","MUB","109.00","3.03", "Joint Build Wealth Goal"),
         createTransaction("11/14/2016","Deposit from","LQD","117.31","1.28", "Joint Build Wealth Goal"),

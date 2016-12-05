@@ -21,7 +21,7 @@ TransactionsToQif.convert = function(transactions) {
     var action = txn.quantity >= 0 ? 'Buy' : 'Sell';
 
     return [
-      "!Type:Invst", 
+      "!Type:Invst",
       "D" + txn.date.toLocaleDateString('en-US'),
       "N" + action,
       "Y" + txn.ticker,

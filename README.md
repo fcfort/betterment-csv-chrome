@@ -12,30 +12,26 @@ To access development releases, you'll need npm installed. Start by cloning the 
 
 Source Code: [github.com/fcfort/betterment-csv-chrome](https://github.com/fcfort/betterment-csv-chrome)
 
-- Run `grunt builddev`
+- Run `grunt build`
 - Open `chrome://extensions/` or select the menu `Window > Extensions`.
 - Enable the developer mode at top right.
 - Click `Load unpacked extension...` and select the `dist/app/` folder.
 
 ## Packaging
 
-`grunt packagedev --testPdfDir ../relative/path/to/test/pdfs/and/csvs`
+`grunt package --testPdfDir=../relative/path/to/test/pdfs/and/csvs`Fi
 
 ## Uploading
 
-`grunt webstore_upload --secretsFile ../relative/path/to/secrets.json`
+`grunt upload --secretsFile=../relative/path/to/secrets.json`
 
 Accept the OAuth2 prompt that opens in your browser.
 
 ## Testing
 
-### Unit tests
+### Unit & Integration tests
 
-`grunt mochaTest`
-
-### Integration tests
-
-`grunt karmaTest --testPdfDir ../relative/path/to/test/pdfs/and/csvs`
+`grunt test --testPdfDir=../relative/path/to/test/pdfs/and/csvs`
 
 ## Libraries
 

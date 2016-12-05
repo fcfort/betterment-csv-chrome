@@ -17,7 +17,7 @@ describe('Betterment Transaction to CSV converter', function() {
     var csv = TransactionsToCsv.convert(transactions);
 
     csv.should.eql(
-      'Account,Date,Transaction,Portfolio/Fund,Price,Shares,Value\n' + 
+      'Account,Date,Transaction,Portfolio/Fund,Price,Shares,Value\n' +
       'A,2/3/2016,foo,BAR,1.00,2.45,43.03'
     );
   });

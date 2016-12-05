@@ -139,7 +139,7 @@ describe('Betterment PDF Parsing', function() {
     var transactions = parser.parse(quarterlyPdf);
 
     it('should return the right transactions', function () {
-      var expectedTransactions = [      
+      var expectedTransactions = [
         createTransaction("11/04/2015","10/30/2015 Payroll Contribution","VTI","333.66","333.66", "Traditional 401(k)"),
         createTransaction("11/04/2015","10/30/2015 Payroll Contribution","VEA","22.55","333.66", "Traditional 401(k)"),
         createTransaction("11/04/2015","10/30/2015 Payroll Contribution","VWO","22.55","333.66", "Traditional 401(k)"),
