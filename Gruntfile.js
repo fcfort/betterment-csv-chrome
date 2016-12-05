@@ -111,9 +111,6 @@ module.exports = function(grunt) {
     },
     crx: {
       extension: {
-        'options': {
-          'privateKey': grunt.option('privateKey'),
-        },
         'src': [ 'dist/app/*', ],
         'dest': 'dist/builds/<%= pkg.name %>-<%= manifest.version %>.zip',
       }
