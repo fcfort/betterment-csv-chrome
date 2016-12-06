@@ -21,7 +21,7 @@ module.exports = function(grunt) {
     jasmine: {
       browserifyTest: {
         options: {
-          specs: 'test/**/*-spec.js',
+          specs: 'test/**/*-test.js',
         }
       }
     },
@@ -87,7 +87,7 @@ module.exports = function(grunt) {
       main: { src: 'app/src/pdf-to-csv.js', dest: 'dist/app/main.js' },
       worker_path: { src: 'app/src/load-pdf.js', dest: 'dist/app/load-pdf.js' },
       worker: { src: 'app/src/pdf.worker.js', dest: 'dist/app/pdf.worker.js' },
-      karma: { src: 'test/karma/jasminePdfSpec.js', dest: 'test/karma/build/karma-spec.js' },
+      karma: { src: 'test/karma/pdf-to-csv-spec.js', dest: 'test/karma/build/karma-spec.js' },
     },
     uglify: {
       dist: {
