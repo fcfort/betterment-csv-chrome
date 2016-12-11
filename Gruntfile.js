@@ -17,7 +17,6 @@ module.exports = function(grunt) {
   grunt.initConfig({
     // TODO: Use pkg data to set version of build
     pkg: grunt.file.readJSON('package.json'),
-    manifest: grunt.file.readJSON('app/manifest.json'),
     jasmine: {
       browserifyTest: {
         options: {
@@ -52,7 +51,6 @@ module.exports = function(grunt) {
         ],
         dest: 'dist/app/libs.js'
       },
-      manifest: { src: ['app/manifest.json'], dest: 'dist/app/manifest.json' },
     },
     copy: {
       dist: {
@@ -62,7 +60,6 @@ module.exports = function(grunt) {
             flatten: true,
             src: [
               'app/images/*',
-              'app/manifest.json',
               'app/src/options.*',
             ],
             dest: 'dist/app/'
@@ -112,7 +109,7 @@ module.exports = function(grunt) {
     crx: {
       extension: {
         'src': [ 'dist/app/*', ],
-        'dest': 'dist/builds/<%= pkg.name %>-<%= manifest.version %>.zip',
+        'dest': 'dist/builds/<%= pkg.name %>-<%= pkg.version %>.zip',
       }
     },
     dalek: {
@@ -124,6 +121,20 @@ module.exports = function(grunt) {
         dalekfile: false,
       }
     },
+    replace: {
+      dist: {
+        options: {
+          patterns: [
+            {
+              match: 'version', /* -> */ replacement: '<%= pkg.version %>'
+            }
+          ]
+        },
+        files: [
+          {expand: true, flatten: true, src: ['app/manifest.json'], dest: 'dist/app'}
+        ]
+      }
+    },    
     webstore_upload: {
       accounts: {
         default: { //account under this section will be used by default
@@ -135,7 +146,7 @@ module.exports = function(grunt) {
       extensions: {
         pdf_to_csv: {
           appID: 'jbneodpofmnammepmnejgkacdbjojcgn', // required
-          zip: 'dist/builds/<%= pkg.name %>-<%= manifest.version %>.zip' // required
+          zip: 'dist/builds/<%= pkg.name %>-<%= pkg.version %>.zip' // required
         }
       }
     },
@@ -164,13 +175,14 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-newer');
+  grunt.loadNpmTasks('grunt-replace');  
   grunt.loadNpmTasks('grunt-trimtrailingspaces');
   grunt.loadNpmTasks('grunt-webstore-upload');
 
   // The main grunt tasks, each of which nests the previous one.
   // build -> test -> package -> upload
   grunt.registerTask(
-    'build', [].concat('trimtrailingspaces', 'clean:dist', 'concat', 'browserify', 'copy:dist'));
+    'build', [].concat('trimtrailingspaces', 'clean:dist', 'replace:dist', 'concat', 'browserify', 'copy:dist'));
   grunt.registerTask(
     'test', [].concat('build', 'mochaTest', 'clean:karma', 'copy:karma', 'browserify:karma', 'karma'));
   grunt.registerTask(
