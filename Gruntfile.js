@@ -138,7 +138,7 @@ module.exports = function(grunt) {
     webstore_upload: {
       accounts: {
         default: { //account under this section will be used by default
-          publish: false, //publish item right after uploading. default false
+          publish: true, //publish item right after uploading. default false
           client_id: secrets.client_id,
           client_secret: secrets.client_secret
         }
