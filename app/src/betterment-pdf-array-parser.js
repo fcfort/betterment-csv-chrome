@@ -89,7 +89,7 @@ function is20161111Format(pdfArray) {;
     }
 
     if(afterHeaderRow) {
-      // if new format where it's descr | date instead of date |descr, swap els
+      // if new format where it's descr | date instead of date |descr
       if(line.length >= 7 && line.slice(-7, -6)[0].match(BettermentPdfArrayParser.bettermentDateRe)) {
         return true;
       }
@@ -110,8 +110,12 @@ function parse20161111Format(pdfArray) {
   pdfArray.forEach(function(line) {
     goal = parseGoal(line, goal);
 
-    if(line.length >= 2 && line.slice(-2, -1)[0] == "Shares" && line.slice(-1)[0] == "Value") {
+    if(isHeaderRow(line)) {
       afterHeaderRow = true;
+      // The current description is reset every time we see a header row since otherwise we accumulate
+      // description items from things that are not actually part of transactions like other parts of
+      // the PDF.
+      currentDescription = [];
     }
 
     if(afterHeaderRow) {
@@ -151,6 +155,21 @@ function parse20161111Format(pdfArray) {
   });
 
   return transactions;
+}
+
+
+/*
+ * For the 20161111 format. Added since there are two kinds of header rows which indicate the
+ * the start of a transaction section.
+ */
+function isHeaderRow(line) {
+  return arraysEqual(["Fund","Price","Shares","Value","Shares","Value"], line) ||
+      arraysEqual(["Value","Shares","Value"], line)
+}
+
+
+function arraysEqual(a, b) {
+  return a.length == b.length && a.every(function(el, i) {return el === b[i];});
 }
 
 

@@ -19,8 +19,9 @@ var transactionPdfStrings = [
 
 function createTransactionRegex() {
   return new RegExp(
-    // 1. app/quarterly_statements for 401k quarterly statements
-    '.*?/(?:app/quarterly_statements/\\d+|document/(?:' +
+    // 1. app/quarterly_statements for 401k quarterly statements. Now includes a "legacy"
+    //    for quarterly PDFs generated before 2016-Q4.
+    '.*?/(?:app/(?:legacy_)?quarterly_statements/\\d+|document/(?:' +
     // 2. document/blah.pdf for all other PDFs
     transactionPdfStrings.join('|') +
     // 3. General case for all PDF types Betterment_DATE
