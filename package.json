@@ -1,6 +1,6 @@
 {
   "name": "betterment-csv-chrome",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fcfort/betterment-csv-chrome.git"

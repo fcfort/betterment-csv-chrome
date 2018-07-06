@@ -29,7 +29,7 @@ Source Code: [github.com/fcfort/betterment-csv-chrome](https://github.com/fcfort
 
 ## Uploading
 
-`grunt upload --secretsFile=../relative/path/to/secrets.json`  --testPdfDir=../relative/path/to/test/pdfs/and/csvs`
+`grunt upload --secretsFile=../relative/path/to/secrets.json --testPdfDir=../relative/path/to/test/pdfs/and/csvs`
 
 Accept the OAuth2 prompt that opens in your browser.
 

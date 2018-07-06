@@ -5,34 +5,17 @@ var pdfparser = require('./betterment-pdf-array-parser');
 var $ = require('jquery');
 var MutationSummary = require('mutation-summary');
 
-/* Only documents beginning with these names will be converted to .csv */
-var transactionPdfStrings = [
-  'Betterment_Account_Transfer_From_',
-  'Betterment_Account_Transfer_To_',
-  'Betterment_Deposit_',
-  'Betterment_Dividend_Reinvestment_',
-  'Betterment_Position_Only_Transfer_All_From_',
-  'Betterment_Position_Only_Transfer_To_',
-  'Betterment_Quarterly_Statement',
-  'Betterment_Rebalance',
-];
-
 function createTransactionRegex() {
   return new RegExp(
-    // 1. app/quarterly_statements for 401k quarterly statements. Now includes a "legacy"
-    //    for quarterly PDFs generated before 2016-Q4.
-    '.*?/(?:app/(?:legacy_)?quarterly_statements/\\d+|document/(?:' +
-    // 2. document/blah.pdf for all other PDFs
-    transactionPdfStrings.join('|') +
-    // 3. General case for all PDF types Betterment_DATE
-    "|Betterment_.*_\\d{4}-\\d{2}-\\d{2}" +
-    ').*?\\.pdf)'
+    'app/quarterly_statements/\\d+' +
+    '|' +
+    'app/legacy_quarterly_statements/\\d+' +
+    '|' +
+    'app/transaction_documents/\\d+'
   );
 }
 
-var quarterlyPdfUrlRe = /.*?\/app\/quarterly_statements\/\d+.*/;
 var transactionPdfRe = createTransactionRegex();
-var transactionPdfNameRe = /.*?\/document\/(.*?)\.pdf/;
 var transactionParser = new pdfparser.BettermentPdfArrayParser();
 
 // Global variable for options
@@ -83,23 +66,14 @@ function handleNewAnchors(summaries) {
 // have to make an ajax call if it is a quarterly 401k PDF.
 // https://wwws.betterment.com/document/Betterment_Deposit_2016-02-18.pdf
 function getFilenamePromise(pdfUrl) {
-  if(quarterlyPdfUrlRe.test(pdfUrl)) {
-    return new Promise(function(resolve) {
-      $.ajax({url: pdfUrl}).done(function(data, textStatus, jqXHR) {
-        // content-disposition: attachment; filename="Betterment_401k_Quarterly_Statement_2015-12-31.pdf"
-        var contentDisposition = jqXHR.getResponseHeader('content-disposition');
-        var found = contentDisposition.match(/(Betterment.*?)\.pdf/);
-        resolve(found[1]);
-      });
+  return new Promise(function(resolve) {
+    $.ajax({url: pdfUrl}).done(function(data, textStatus, jqXHR) {
+      // content-disposition: attachment; filename="Betterment_401k_Quarterly_Statement_2015-12-31.pdf"
+      var contentDisposition = jqXHR.getResponseHeader('content-disposition');
+      var found = contentDisposition.match(/filename="(.*?)"/);
+      resolve(found[1]);
     });
-  } else {
-    var found = pdfUrl.match(transactionPdfNameRe);
-    if(found) {
-      return Promise.resolve(found[1]);
-    } else {
-      return Promise.resolve('transactions');
-    }
-  }
+  });
 }
 
 function createDataUrl(data, mimeType, filename, extension) {
