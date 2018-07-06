@@ -32,7 +32,7 @@
     "karma-chrome-launcher": "^1.0.1",
     "karma-jasmine": "^1.0.2",
     "karma-requirejs": "^1.0.0",
-    "mocha": "^2.4.5",
+    "mocha": "^5.2.0",
     "should": "^8.2.2",
     "watchify": "^3.7.0"
   },
@@ -42,6 +42,8 @@
     "mutation-summary": "0.1.1",
     "node-ensure": "0.0.0",
     "pdfjs-dist": "^1.8.188",
-    "underscore": "^1.8.3"
+    "requirejs": "^2.3.5",
+    "underscore": "^1.8.3",
+    "webpack": "^4.15.1"
   }
 }
