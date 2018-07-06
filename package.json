@@ -41,7 +41,7 @@
     "jquery": "^2.2.1",
     "mutation-summary": "0.1.1",
     "node-ensure": "0.0.0",
-    "pdfjs-dist": "^1.4.135",
+    "pdfjs-dist": "^1.8.188",
     "underscore": "^1.8.3"
   }
 }
