@@ -186,7 +186,7 @@ module.exports = function(grunt) {
   grunt.registerTask(
     'test', [].concat('build', 'mochaTest', 'clean:karma', 'copy:karma', 'browserify:karma', 'karma'));
   grunt.registerTask(
-    'package', [].concat('build', 'test', 'copy:dist', 'crx', 'clean:crx'));
+    'package', [].concat('test', 'copy:dist', 'crx', 'clean:crx'));
   grunt.registerTask(
-    'upload', [].concat('build', 'test', 'package', 'webstore_upload'));  
+    'upload', [].concat('package', 'webstore_upload'));  
 };
