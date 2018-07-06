@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "bootstrap": "^3.3.7",
-    "jquery": "^2.2.1",
+    "jquery": "^3.0.0",
     "mutation-summary": "0.1.1",
     "node-ensure": "0.0.0",
     "pdfjs-dist": "^1.8.188",
