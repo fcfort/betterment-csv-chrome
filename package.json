@@ -22,7 +22,7 @@
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-crx": "^1.0.3",
     "grunt-karma": "^2.0.0",
-    "grunt-mocha-test": "^0.12.7",
+    "grunt-mocha-test": "^0.13.3",
     "grunt-newer": "^1.1.2",
     "grunt-replace": "^1.0.1",
     "grunt-trimtrailingspaces": "^2.3.1",
