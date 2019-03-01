@@ -28,7 +28,7 @@
     "grunt-trimtrailingspaces": "^2.3.1",
     "grunt-webstore-upload": "^0.9.24",
     "jasmine-core": "^2.4.1",
-    "karma": "^4.0.0",
+    "karma": "^4.0.1",
     "karma-chrome-launcher": "^1.0.1",
     "karma-jasmine": "^1.0.2",
     "karma-requirejs": "^1.0.0",
