@@ -1,18 +1,15 @@
 var pdfToTextArray = require('./pdf-to-text-array');
-var TransactionsToCsv = require('./transactions-to-csv');
-var TransactionsToQif = require('./transactions-to-qif');
+var TransactionConverter = require('./transaction-converter');
 var pdfparser = require('./betterment-pdf-array-parser');
 var $ = require('jquery');
 var MutationSummary = require('mutation-summary');
 
 function createTransactionRegex() {
-  return new RegExp(
-    'app/quarterly_statements/\\d+' +
-    '|' +
-    'app/legacy_quarterly_statements/\\d+' +
-    '|' +
-    'app/transaction_documents/\\d+'
-  );
+  return new RegExp('app/quarterly_statements/\\d+' +
+                    '|' +
+                    'app/legacy_quarterly_statements/\\d+' +
+                    '|' +
+                    'app/transaction_documents/\\d+');
 }
 
 var transactionPdfRe = createTransactionRegex();
@@ -22,44 +19,52 @@ var transactionParser = new pdfparser.BettermentPdfArrayParser();
 var outputFormatOptions;
 
 // Async call to get options
-chrome.storage.sync.get({
-  csvOutputDesired: true,
-  qifOutputDesired: false
-}, function(items) {
-  // Store results
-  outputFormatOptions = items;
+chrome.storage.sync.get(
+    {csvOutputDesired : true, qifOutputDesired : false}, function(items) {
+      // Store results
+      outputFormatOptions = items;
 
-  // Create observer for anchor tags
-  new MutationSummary({
-    callback: handleNewAnchors,
-    queries: [{ element: 'a[href]' }]
-  });
-});
+      // Create observer for anchor tags
+      new MutationSummary(
+          {callback : handleNewAnchors, queries : [ {element : 'a[href]'} ]});
+    });
 
 function handleNewAnchors(summaries) {
+  // All txns
+  var allTxns = [];
+
   var anchorSummaries = summaries[0];
 
   anchorSummaries.added.forEach(function(anchorEl) {
     var pdfUrl = anchorEl.href;
 
-    if(transactionPdfRe.test(pdfUrl)) {
+    if (transactionPdfRe.test(pdfUrl)) {
       pdfToTextArray(pdfUrl).then(function(textArray) {
         var transactions = transactionParser.parse(textArray);
-
-        getFilenamePromise(pdfUrl).then(function(filename) {
-          if(outputFormatOptions.csvOutputDesired) {
-            var csv = TransactionsToCsv.convert(transactions);
-            $(anchorEl).before(createDataUrl(csv, 'text/csv', filename, '.csv'));
-          }
-
-          if(outputFormatOptions.qifOutputDesired) {
-            var qif = TransactionsToQif.convert(transactions);
-            $(anchorEl).before(createDataUrl(qif, 'application/qif', filename, '.qif'));
-          }
-        });
+        allTxns.push(transactions);
+        getFilenamePromise(pdfUrl).then(function(
+            filename) { writeTxnsToDataUrls($(anchorEl), transactions); });
       });
     }
   });
+
+  // Append all transactions found on the page to a new data href at the bottom
+  if (allTxns) {
+    writeTxnsToDataUrls($('a[href^="/app/activity_transactions.csv"]'),
+                        allTxns);
+  }
+}
+
+function writeTxnsToDataUrls(beforeEl, transactions) {
+  if (outputFormatOptions.csvOutputDesired) {
+    var csv = TransactionConverter.convert(transactions, 'csv')
+    beforeEl.before(createDataUrl(csv, 'text/csv', filename, '.csv'));
+  }
+
+  if (outputFormatOptions.qifOutputDesired) {
+    var qif = TransactionConverter.convert(transactions, 'qif')
+    beforeEl.before(createDataUrl(qif, 'application/qif', filename, '.qif'));
+  }
 }
 
 // Grab filename (without .pdf at the end) from PDF URL. Is a promise because we
@@ -67,8 +72,9 @@ function handleNewAnchors(summaries) {
 // https://wwws.betterment.com/document/Betterment_Deposit_2016-02-18.pdf
 function getFilenamePromise(pdfUrl) {
   return new Promise(function(resolve) {
-    $.ajax({url: pdfUrl}).done(function(data, textStatus, jqXHR) {
-      // content-disposition: attachment; filename="Betterment_401k_Quarterly_Statement_2015-12-31.pdf"
+    $.ajax({url : pdfUrl}).done(function(data, textStatus, jqXHR) {
+      // content-disposition: attachment;
+      // filename="Betterment_401k_Quarterly_Statement_2015-12-31.pdf"
       var contentDisposition = jqXHR.getResponseHeader('content-disposition');
       var found = contentDisposition.match(/filename="(.*?)"/);
       resolve(found[1]);
@@ -77,7 +83,7 @@ function getFilenamePromise(pdfUrl) {
 }
 
 function createDataUrl(data, mimeType, filename, extension) {
-  var blob = new Blob([data], {type: mimeType, endings: 'native'});
+  var blob = new Blob([ data ], {type : mimeType, endings : 'native'});
   var blobUrl = window.URL.createObjectURL(blob);
 
   var a = document.createElement('a');

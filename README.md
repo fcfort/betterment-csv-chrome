@@ -6,6 +6,11 @@ Betterment is a wonderful brokerage service, but doesn't provide ticker-level tr
 
 This extension parses those PDFs and creates ticker-level transaction .csv download links on the Activity Page entirely in the browser using PDF.js and Web Workers.
 
+## Dev Setup
+
+- Run `sudo apt install npm node-grunt-cli`
+- Run `grunt install`
+
 ## Building
 
 To access development releases, you'll need npm installed. Start by cloning the project locally.
