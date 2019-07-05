@@ -42,20 +42,21 @@ function handleNewAnchors(summaries) {
       pdfToTextArray(pdfUrl).then(function(textArray) {
         var transactions = transactionParser.parse(textArray);
         allTxns.push(transactions);
-        getFilenamePromise(pdfUrl).then(function(
-            filename) { writeTxnsToDataUrls($(anchorEl), transactions); });
+        getFilenamePromise(pdfUrl).then(function(filename) {
+          writeTxnsToDataUrls($(anchorEl), transactions, filename);
+        });
       });
     }
   });
 
   // Append all transactions found on the page to a new data href at the bottom
   if (allTxns) {
-    writeTxnsToDataUrls($('a[href^="/app/activity_transactions.csv"]'),
-                        allTxns);
+    writeTxnsToDataUrls($('a[href^="/app/activity_transactions.csv"]'), allTxns,
+                        'all');
   }
 }
 
-function writeTxnsToDataUrls(beforeEl, transactions) {
+function writeTxnsToDataUrls(beforeEl, transactions, filename) {
   if (outputFormatOptions.csvOutputDesired) {
     var csv = TransactionConverter.convert(transactions, 'csv')
     beforeEl.before(createDataUrl(csv, 'text/csv', filename, '.csv'));
