@@ -3,11 +3,11 @@ var TransactionsToQif = require('./transactions-to-qif');
 
 var TransactionConverter = function() {};
 
-TransactionConverter.convertCsv = function(transactions) {
+TransactionConverter.toCsv = function(transactions) {
   return TransactionsToCsv.convert(transactions);
 };
 
-TransactionConverter.convertQif = function(transactions) {
+TransactionConverter.toQif = function(transactions) {
   return TransactionsToQif.convert(transactions);
 };
 
