@@ -25,10 +25,10 @@ var DataFile = function(name, format, data) {
   this.data = data;
 
   if (format === OutputFormat.CSV) {
-    this.extension = 'csv';
+    this.extension = '.csv';
     this.mimetype = 'text/csv';
   } else if (format === OutputFormat.QIF) {
-    this.extension = 'qif';
+    this.extension = '.qif';
     this.mimetype = 'application/qif';
   } else {
     throw 'Unrecognized extension';
@@ -92,10 +92,9 @@ chrome.storage.sync.get(
       // Store results
       if (items.csvOutputDesired) {
         OUTPUT_FORMATS.push(OutputFormat.CSV);
-      } else if (items.qifOutputDesired) {
+      }
+      if (items.qifOutputDesired) {
         OUTPUT_FORMATS.push(OutputFormat.QIF);
-      } else {
-        throw 'Unrecognized output format';
       }
 
       ADD_COMBINED_OUTPUT = items.combinedOutputDesired;
@@ -170,8 +169,8 @@ function insertContainer(elPos, elLoc, container) {
   }
 }
 
-// Grab filename (without .pdf at the end) from PDF URL. Is a promise because we
-// have to make an ajax call if it is a quarterly 401k PDF.
+// Grab filename (without .pdf at the end) from PDF URL. Is a promise because
+// we have to make an ajax call if it is a quarterly 401k PDF.
 // https://wwws.betterment.com/document/Betterment_Deposit_2016-02-18.pdf
 function getFilenamePromise(pdfUrl) {
   return new Promise(function(resolve) {
@@ -192,9 +191,9 @@ function createDataUrl(file, id) {
 
   let a = document.createElement('a');
   a.href = blobUrl;
-  a.download = file.name + '.' + file.extension;
+  a.download = file.name + file.extension;
   a.textContent = file.extension;
-  a.style = 'font-size: 12px';
+  a.style = 'font-size: 12px; padding-right: 2px';
   // Hack so that this a tag doesn't make the row disappear.
   a.setAttribute('data-no-toggle', 'true');
 
@@ -205,8 +204,8 @@ function createDataUrl(file, id) {
   return a;
 }
 
-// Returns a <span> el containing blob download links to the given files. Order
-// of the files determines the order of the links.
+// Returns a <span> el containing blob download links to the given files.
+// Order of the files determines the order of the links.
 function createDownloadContainer(files, id) {
   let span = document.createElement('span');
 
