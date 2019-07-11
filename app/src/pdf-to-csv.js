@@ -47,8 +47,8 @@ DataFile.makeQif = function(name, data) {
 /*
  * Summary Tracker
  */
-var SummaryTracker = function() {
-  this.id = 'summary-tracker-betterment-csv-chrome';
+var SummaryTracker = function(id) {
+  this.id = id;
   this.elementQuery = 'a[href^="/app/activity_transactions.csv"]';
   this.txns = [];
 };
@@ -81,9 +81,6 @@ var transactionParser = new pdfparser.BettermentPdfArrayParser();
 const OUTPUT_FORMATS = [];
 var ADD_COMBINED_OUTPUT = false;
 
-// Summary view tracker
-var summaryView = new SummaryTracker();
-
 // Async call to get options
 chrome.storage.sync.get(
     {
@@ -109,8 +106,13 @@ chrome.storage.sync.get(
     });
 
 function handleNewAnchors(summaries) {
-  // All txns
-  var allTxns = [];
+  // Here we make the assumption that whenever the anchors change on the page
+  // that we are free to blow away whatever transactions were being stored
+  // before. This means we are assuming that we don't expect anchors to be
+  // added, instead when the user selects a new date range, that every PDF
+  // shown will be re-added to the DOM.
+  let summaryTracker = new SummaryTracker('betterment-csv-chrome-combined');
+
   var anchorSummaries = summaries[0];
 
   anchorSummaries.added.forEach(function(anchorEl) {
@@ -121,7 +123,7 @@ function handleNewAnchors(summaries) {
         var transactions = transactionParser.parse(textArray);
 
         if (ADD_COMBINED_OUTPUT) {
-          summaryView.appendTxns(transactions);
+          summaryTracker.appendTxns(transactions);
         }
 
         getFilenamePromise(pdfUrl).then(function(filename) {

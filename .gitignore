@@ -2,3 +2,5 @@ tmp/
 node_modules/
 .DS_Store
 test/karma/build/
+dist/builds/
+
