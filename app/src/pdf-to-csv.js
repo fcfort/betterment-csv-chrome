@@ -4,6 +4,8 @@ var pdfparser = require('./betterment-pdf-array-parser');
 var $ = require('jquery');
 var MutationSummary = require('mutation-summary');
 
+const ElementLocation = Object.freeze({"BEFORE" : 1, "REPLACE" : 2});
+
 function createTransactionRegex() {
   return new RegExp('app/quarterly_statements/\\d+' +
                     '|' +
@@ -17,6 +19,30 @@ var transactionParser = new pdfparser.BettermentPdfArrayParser();
 
 // Global variable for options
 var outputFormatOptions;
+
+// Summary Tracker class
+var SummaryTracker = function() {
+  this.id = "summary-tracker-betterment-csv-chrome";
+  this.elementQuery = 'a[href^="/app/activity_transactions.csv"]';
+  this.txns = [];
+};
+
+SummaryTracker.prototype.appendTxns =
+    function(txns) {
+  this.txns.push.apply(this.txns, txns);
+  let el = $("#" + this.id);
+  if (el.length == 0) {
+    console.log("First time writing txns");
+    writeTxnsToDataUrls($(this.elementQuery), ElementLocation.BEFORE, this.txns,
+                        'all', this.id);
+  } else {
+    console.log("Not first time writing txns");
+    writeTxnsToDataUrls(el, ElementLocation.REPLACE, this.txns, 'all', this.id);
+  }
+}
+
+// Summary view tracker
+var summaryView = new SummaryTracker();
 
 // Async call to get options
 chrome.storage.sync.get(
@@ -32,40 +58,48 @@ chrome.storage.sync.get(
 function handleNewAnchors(summaries) {
   // All txns
   var allTxns = [];
-
   var anchorSummaries = summaries[0];
 
   anchorSummaries.added.forEach(function(anchorEl) {
     var pdfUrl = anchorEl.href;
 
     if (transactionPdfRe.test(pdfUrl)) {
+      console.log('Found PDF url');
       pdfToTextArray(pdfUrl).then(function(textArray) {
         var transactions = transactionParser.parse(textArray);
-        allTxns.push(transactions);
+        summaryView.appendTxns(transactions);
+        console.log('Done parsing PDFs to txns');
         getFilenamePromise(pdfUrl).then(function(filename) {
-          writeTxnsToDataUrls($(anchorEl), transactions, filename);
+          writeTxnsToDataUrls($(anchorEl), ElementLocation.BEFORE, transactions,
+                              filename);
         });
       });
     }
   });
-
-  // Append all transactions found on the page to a new data href at the bottom
-  if (allTxns) {
-    writeTxnsToDataUrls($('a[href^="/app/activity_transactions.csv"]'), allTxns,
-                        'all');
-  }
 }
 
-function writeTxnsToDataUrls(beforeEl, transactions, filename) {
+function writeTxnsToDataUrls(elPos, elLoc, transactions, filename, id) {
+  let newEls = [];
+
   if (outputFormatOptions.csvOutputDesired) {
-    var csv = TransactionConverter.convert(transactions, 'csv')
-    beforeEl.before(createDataUrl(csv, 'text/csv', filename, '.csv'));
+    let csv = TransactionConverter.toCsv(transactions);
+    let el = createDataUrl(csv, 'text/csv', filename, '.csv', id);
+    newEls.push(el);
   }
 
   if (outputFormatOptions.qifOutputDesired) {
-    var qif = TransactionConverter.convert(transactions, 'qif')
-    beforeEl.before(createDataUrl(qif, 'application/qif', filename, '.qif'));
+    let qif = TransactionConverter.toQif(transactions);
+    let el = createDataUrl(qif, 'application/qif', filename, '.qif', id);
+    newEls.push(el);
   }
+
+  newEls.forEach(function(el) {
+    if (elLoc === ElementLocation.BEFORE) {
+      elPos.before(el);
+    } else if (elLoc === ElementLocation.REPLACE) {
+      elPos.parentNode.replaceChild(el, elPos);
+    }
+  });
 }
 
 // Grab filename (without .pdf at the end) from PDF URL. Is a promise because we
@@ -83,16 +117,22 @@ function getFilenamePromise(pdfUrl) {
   });
 }
 
-function createDataUrl(data, mimeType, filename, extension) {
-  var blob = new Blob([ data ], {type : mimeType, endings : 'native'});
-  var blobUrl = window.URL.createObjectURL(blob);
+function createDataUrl(data, mimeType, filename, extension, id) {
+  let blob = new Blob([ data ], {type : mimeType, endings : 'native'});
+  let blobUrl = window.URL.createObjectURL(blob);
+  console.log('Got blob url ' + blobUrl);
 
-  var a = document.createElement('a');
+  let a = document.createElement('a');
   a.href = blobUrl;
   a.download = filename + extension;
   a.textContent = extension;
   a.style = 'font-size: 12px';
   // Hack so that this a tag doesn't make the row disappear.
   a.setAttribute('data-no-toggle', 'true');
+
+  if (typeof id !== 'undefined') {
+    a.id = id;
+  }
+
   return a;
 }
