@@ -5,11 +5,12 @@ var $ = require('jquery');
 var MutationSummary = require('mutation-summary');
 
 function createTransactionRegex() {
-  return new RegExp('app/quarterly_statements/\\d+' +
-                    '|' +
-                    'app/legacy_quarterly_statements/\\d+' +
-                    '|' +
-                    'app/transaction_documents/\\d+');
+  return new RegExp(
+      'app/quarterly_statements/\\d+' +
+      '|' +
+      'app/legacy_quarterly_statements/\\d+' +
+      '|' +
+      'app/transaction_documents/\\d+');
 }
 
 var transactionPdfRe = createTransactionRegex();
@@ -20,13 +21,13 @@ var outputFormatOptions;
 
 // Async call to get options
 chrome.storage.sync.get(
-    {csvOutputDesired : true, qifOutputDesired : false}, function(items) {
+    {csvOutputDesired: true, qifOutputDesired: false}, function(items) {
       // Store results
       outputFormatOptions = items;
 
       // Create observer for anchor tags
       new MutationSummary(
-          {callback : handleNewAnchors, queries : [ {element : 'a[href]'} ]});
+          {callback: handleNewAnchors, queries: [{element: 'a[href]'}]});
     });
 
 function handleNewAnchors(summaries) {
@@ -51,19 +52,19 @@ function handleNewAnchors(summaries) {
 
   // Append all transactions found on the page to a new data href at the bottom
   if (allTxns) {
-    writeTxnsToDataUrls($('a[href^="/app/activity_transactions.csv"]'), allTxns,
-                        'all');
+    writeTxnsToDataUrls(
+        $('a[href^="/app/activity_transactions.csv"]'), allTxns, 'all');
   }
 }
 
 function writeTxnsToDataUrls(beforeEl, transactions, filename) {
   if (outputFormatOptions.csvOutputDesired) {
-    var csv = TransactionConverter.convert(transactions, 'csv')
+    var csv = TransactionConverter.convertCsv(transactions);
     beforeEl.before(createDataUrl(csv, 'text/csv', filename, '.csv'));
   }
 
   if (outputFormatOptions.qifOutputDesired) {
-    var qif = TransactionConverter.convert(transactions, 'qif')
+    var qif = TransactionConverter.convertQif(transactions);
     beforeEl.before(createDataUrl(qif, 'application/qif', filename, '.qif'));
   }
 }
@@ -73,7 +74,7 @@ function writeTxnsToDataUrls(beforeEl, transactions, filename) {
 // https://wwws.betterment.com/document/Betterment_Deposit_2016-02-18.pdf
 function getFilenamePromise(pdfUrl) {
   return new Promise(function(resolve) {
-    $.ajax({url : pdfUrl}).done(function(data, textStatus, jqXHR) {
+    $.ajax({url: pdfUrl}).done(function(data, textStatus, jqXHR) {
       // content-disposition: attachment;
       // filename="Betterment_401k_Quarterly_Statement_2015-12-31.pdf"
       var contentDisposition = jqXHR.getResponseHeader('content-disposition');
@@ -84,7 +85,7 @@ function getFilenamePromise(pdfUrl) {
 }
 
 function createDataUrl(data, mimeType, filename, extension) {
-  var blob = new Blob([ data ], {type : mimeType, endings : 'native'});
+  var blob = new Blob([data], {type: mimeType, endings: 'native'});
   var blobUrl = window.URL.createObjectURL(blob);
 
   var a = document.createElement('a');

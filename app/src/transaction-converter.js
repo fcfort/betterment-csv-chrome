@@ -3,14 +3,13 @@ var TransactionsToQif = require('./transactions-to-qif');
 
 var TransactionConverter = function() {};
 
-TransactionConverter.convert =
-    function(transactions, extension) {
-  if (extension === 'qif') {
-    return TransactionsToQif.convert(transactions);
-  } else if (extension == 'csv') {
-    return TransactionsToCsv.convert(transactions);
-  }
-}
+TransactionConverter.convertCsv = function(transactions) {
+  return TransactionsToCsv.convert(transactions);
+};
+
+TransactionConverter.convertQif = function(transactions) {
+  return TransactionsToQif.convert(transactions);
+};
 
 // For mocha testing
 var module = module || {};
