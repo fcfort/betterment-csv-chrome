@@ -4,80 +4,104 @@ var pdfparser = require('./betterment-pdf-array-parser');
 var $ = require('jquery');
 var MutationSummary = require('mutation-summary');
 
+
+/*
+ * ElementLocation
+ */
 const ElementLocation = Object.freeze({'BEFORE': 1, 'REPLACE': 2});
 
-function createTransactionRegex() {
-  return new RegExp(
-      'app/quarterly_statements/\\d+' +
-      '|' +
-      'app/legacy_quarterly_statements/\\d+' +
-      '|' +
-      'app/transaction_documents/\\d+');
-}
 
-var transactionPdfRe = createTransactionRegex();
-var transactionParser = new pdfparser.BettermentPdfArrayParser();
+/*
+ * OutputFormat
+ */
+const OutputFormat = Object.freeze({'CSV': 1, 'QIF': 2});
 
 
-// Global variable for options
-var outputFormatOptions;
-
-
-var DataFile = function(name, extension, data) {
+/*
+ * DataFile
+ */
+var DataFile = function(name, format, data) {
   this.name = name;
-  this.extension = extension;
   this.data = data;
 
-  if (extension === 'csv') {
+  if (format === OutputFormat.CSV) {
+    this.extension = 'csv';
     this.mimetype = 'text/csv';
-  } else if (extension === 'qif') {
+  } else if (format === OutputFormat.QIF) {
+    this.extension = 'qif';
     this.mimetype = 'application/qif';
   } else {
     throw 'Unrecognized extension';
   }
 };
 
-DataFile.makeCsv =
-    function(name, data) {
-  return new DataFile(name, 'csv', data);
-}
+DataFile.makeCsv = function(name, data) {
+  return new DataFile(name, OutputFormat.CSV, data);
+};
 
-    DataFile.makeQif =
-        function(name, data) {
-  return new DataFile(name, 'qif', data);
-}
+DataFile.makeQif = function(name, data) {
+  return new DataFile(name, OutputFormat.QIF, data);
+};
 
 
-// Summary Tracker class
+/*
+ * Summary Tracker
+ */
 var SummaryTracker = function() {
   this.id = 'summary-tracker-betterment-csv-chrome';
   this.elementQuery = 'a[href^="/app/activity_transactions.csv"]';
   this.txns = [];
 };
 
-SummaryTracker.prototype.appendTxns =
-    function(txns) {
+SummaryTracker.prototype.appendTxns = function(txns) {
   this.txns.push.apply(this.txns, txns);
+  let container = createContainerFromTransactions(this.txns, 'all', this.id);
   let el = $('#' + this.id);
-  if (el.length == 0) {
-    console.log('First time writing txns');
-    writeTxnsToDataUrls(
-        $(this.elementQuery), ElementLocation.BEFORE, this.txns, 'all',
-        this.id);
+  if (el.length === 0) {
+    insertContainer($(this.elementQuery), ElementLocation.BEFORE, container);
   } else {
-    console.log('Not first time writing txns');
-    writeTxnsToDataUrls(el, ElementLocation.REPLACE, this.txns, 'all', this.id);
+    insertContainer(el, ElementLocation.REPLACE, container);
   }
-}
+};
+
+
+/*
+ * globals
+ */
+
+const transactionPdfRe = new RegExp(
+    'app/quarterly_statements/\\d+' +
+    '|' +
+    'app/legacy_quarterly_statements/\\d+' +
+    '|' +
+    'app/transaction_documents/\\d+');
+var transactionParser = new pdfparser.BettermentPdfArrayParser();
+
+// Global variable for options
+const OUTPUT_FORMATS = [];
+var ADD_COMBINED_OUTPUT = false;
 
 // Summary view tracker
 var summaryView = new SummaryTracker();
 
 // Async call to get options
 chrome.storage.sync.get(
-    {csvOutputDesired: true, qifOutputDesired: false}, function(items) {
+    {
+      csvOutputDesired: true,
+      qifOutputDesired: false,
+      combinedOutputDesired: false,
+    },
+    function(items) {
       // Store results
-      outputFormatOptions = items;
+      if (items.csvOutputDesired) {
+        OUTPUT_FORMATS.push(OutputFormat.CSV);
+      } else if (items.qifOutputDesired) {
+        OUTPUT_FORMATS.push(OutputFormat.QIF);
+      } else {
+        throw 'Unrecognized output format';
+      }
+
+      ADD_COMBINED_OUTPUT = items.combinedOutputDesired;
 
       // Create observer for anchor tags
       new MutationSummary(
@@ -93,43 +117,55 @@ function handleNewAnchors(summaries) {
     var pdfUrl = anchorEl.href;
 
     if (transactionPdfRe.test(pdfUrl)) {
-      console.log('Found PDF url');
       pdfToTextArray(pdfUrl).then(function(textArray) {
         var transactions = transactionParser.parse(textArray);
-        summaryView.appendTxns(transactions);
-        console.log('Done parsing PDFs to txns');
+
+        if (ADD_COMBINED_OUTPUT) {
+          summaryView.appendTxns(transactions);
+        }
+
         getFilenamePromise(pdfUrl).then(function(filename) {
-          writeTxnsToDataUrls(
-              $(anchorEl), ElementLocation.BEFORE, transactions, filename);
+          let container =
+              createContainerFromTransactions(transactions, filename);
+          insertContainer($(anchorEl), ElementLocation.BEFORE, container);
         });
       });
     }
   });
 }
 
-function writeTxnsToDataUrls(elPos, elLoc, transactions, filename, id) {
+// Returns a plain DOM element
+function createContainerFromTransactions(transactions, filename, id) {
+  let files = createDownloadFiles(transactions, filename);
+  return createDownloadContainer(files, id);
+}
+
+function createDownloadFiles(transactions, filename) {
   let files = [];
 
-  if (outputFormatOptions.csvOutputDesired) {
-    let csvData = TransactionConverter.toCsv(transactions);
-    let csvFile = DataFile.makeCsv(filename, csvData);
-    files.push(csvFile);
-  }
-
-  if (outputFormatOptions.qifOutputDesired) {
-    let qifData = TransactionConverter.toQif(transactions);
-    let qifFile = DataFile.makeQif(filename, qifData);
-    files.push(qifFile);
-  }
-
-  files.forEach(function(file) {
-    let el = createDataUrl(file);
-    if (elLoc === ElementLocation.BEFORE) {
-      elPos.before(el);
-    } else if (elLoc === ElementLocation.REPLACE) {
-      elPos.parentNode.replaceChild(el, elPos);
+  OUTPUT_FORMATS.forEach(function(format) {
+    let data;
+    if (format === OutputFormat.CSV) {
+      let data = TransactionConverter.toCsv(transactions);
+      let file = DataFile.makeCsv(filename, data);
+      files.push(file);
+    } else if (format === OutputFormat.QIF) {
+      let data = TransactionConverter.toQif(transactions);
+      let file = DataFile.makeQif(filename, data);
+      files.push(file);
     }
   });
+
+  return files;
+}
+
+// Note: elPos must be a jQuery element, not a plain DOM element.
+function insertContainer(elPos, elLoc, container) {
+  if (elLoc === ElementLocation.BEFORE) {
+    elPos.before(container);
+  } else if (elLoc === ElementLocation.REPLACE) {
+    elPos.replaceWith(container);
+  }
 }
 
 // Grab filename (without .pdf at the end) from PDF URL. Is a promise because we
@@ -147,6 +183,7 @@ function getFilenamePromise(pdfUrl) {
   });
 }
 
+// Returns a plain DOM element
 function createDataUrl(file, id) {
   let blob = new Blob([file.data], {type: file.mimeType, endings: 'native'});
   let blobUrl = window.URL.createObjectURL(blob);
@@ -164,4 +201,20 @@ function createDataUrl(file, id) {
   }
 
   return a;
+}
+
+// Returns a <span> el containing blob download links to the given files. Order
+// of the files determines the order of the links.
+function createDownloadContainer(files, id) {
+  let span = document.createElement('span');
+
+  if (typeof id !== 'undefined') {
+    span.id = id;
+  }
+
+  files.forEach(function(file) {
+    span.appendChild(createDataUrl(file));
+  });
+
+  return span;
 }
