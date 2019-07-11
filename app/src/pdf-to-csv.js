@@ -28,20 +28,22 @@ var DataFile = function(name, extension, data) {
   this.extension = extension;
   this.data = data;
 
-  if(extension === 'csv') {
+  if (extension === 'csv') {
     this.mimetype = 'text/csv';
-  else if(extension === 'qif') {
+  } else if (extension === 'qif') {
     this.mimetype = 'application/qif';
   } else {
     throw 'Unrecognized extension';
   }
 };
 
-DataFile.makeCsv = function(name, data) {
+DataFile.makeCsv =
+    function(name, data) {
   return new DataFile(name, 'csv', data);
 }
 
-DataFile.makeQif = function(name, data) {
+    DataFile.makeQif =
+        function(name, data) {
   return new DataFile(name, 'qif', data);
 }
 
@@ -151,7 +153,7 @@ function createDataUrl(file, id) {
 
   let a = document.createElement('a');
   a.href = blobUrl;
-  a.download = file.name + '.'  + file.extension;
+  a.download = file.name + '.' + file.extension;
   a.textContent = file.extension;
   a.style = 'font-size: 12px';
   // Hack so that this a tag doesn't make the row disappear.
