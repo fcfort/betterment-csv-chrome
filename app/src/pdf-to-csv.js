@@ -18,8 +18,33 @@ function createTransactionRegex() {
 var transactionPdfRe = createTransactionRegex();
 var transactionParser = new pdfparser.BettermentPdfArrayParser();
 
+
 // Global variable for options
 var outputFormatOptions;
+
+
+var DataFile = function(name, extension, data) {
+  this.name = name;
+  this.extension = extension;
+  this.data = data;
+
+  if(extension === 'csv') {
+    this.mimetype = 'text/csv';
+  else if(extension === 'qif') {
+    this.mimetype = 'application/qif';
+  } else {
+    throw 'Unrecognized extension';
+  }
+};
+
+DataFile.makeCsv = function(name, data) {
+  return new DataFile(name, 'csv', data);
+}
+
+DataFile.makeQif = function(name, data) {
+  return new DataFile(name, 'qif', data);
+}
+
 
 // Summary Tracker class
 var SummaryTracker = function() {
@@ -81,21 +106,22 @@ function handleNewAnchors(summaries) {
 }
 
 function writeTxnsToDataUrls(elPos, elLoc, transactions, filename, id) {
-  let newEls = [];
+  let files = [];
 
   if (outputFormatOptions.csvOutputDesired) {
-    let csv = TransactionConverter.toCsv(transactions);
-    let el = createDataUrl(csv, 'text/csv', filename, '.csv', id);
-    newEls.push(el);
+    let csvData = TransactionConverter.toCsv(transactions);
+    let csvFile = DataFile.makeCsv(filename, csvData);
+    files.push(csvFile);
   }
 
   if (outputFormatOptions.qifOutputDesired) {
-    let qif = TransactionConverter.toQif(transactions);
-    let el = createDataUrl(qif, 'application/qif', filename, '.qif', id);
-    newEls.push(el);
+    let qifData = TransactionConverter.toQif(transactions);
+    let qifFile = DataFile.makeQif(filename, qifData);
+    files.push(qifFile);
   }
 
-  newEls.forEach(function(el) {
+  files.forEach(function(file) {
+    let el = createDataUrl(file);
     if (elLoc === ElementLocation.BEFORE) {
       elPos.before(el);
     } else if (elLoc === ElementLocation.REPLACE) {
@@ -119,14 +145,14 @@ function getFilenamePromise(pdfUrl) {
   });
 }
 
-function createDataUrl(data, mimeType, filename, extension, id) {
-  let blob = new Blob([data], {type: mimeType, endings: 'native'});
+function createDataUrl(file, id) {
+  let blob = new Blob([file.data], {type: file.mimeType, endings: 'native'});
   let blobUrl = window.URL.createObjectURL(blob);
 
   let a = document.createElement('a');
   a.href = blobUrl;
-  a.download = filename + extension;
-  a.textContent = extension;
+  a.download = file.name + '.'  + file.extension;
+  a.textContent = file.extension;
   a.style = 'font-size: 12px';
   // Hack so that this a tag doesn't make the row disappear.
   a.setAttribute('data-no-toggle', 'true');
