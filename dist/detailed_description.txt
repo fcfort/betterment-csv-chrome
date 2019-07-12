@@ -1,7 +1,9 @@
 Adds a download link next to each PDF statement on the Activity page with the ticket-level transaction data for easy exporting to your favorite financial software.
 
+There is support for exporting as CSV, QIF (Quicken format), and for a combined download of all PDFs on the Activity page.
+
 Betterment is a wonderful brokerage service, but doesn't provide ticker-level transaction data for easy export. But, this data is available via the PDFs on the Activity page.
 
-This extension parses those PDFs and creates ticker-level transaction .csv download links on the Activity Page entirely in the browser using PDF.js and Web Workers.
+This extension parses those PDFs and creates ticker-level transaction download links on the Activity Page entirely in the browser using PDF.js and Web Workers.
 
 See https://github.com/fcfort/betterment-csv-chrome for more information.

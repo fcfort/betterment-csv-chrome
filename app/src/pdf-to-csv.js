@@ -55,8 +55,8 @@ var SummaryTracker = function(id) {
 
 SummaryTracker.prototype.appendTxns = function(txns) {
   this.txns.push.apply(this.txns, txns);
-  let container = createContainerFromTransactions(this.txns, 'all', this.id);
-  let el = $('#' + this.id);
+  const container = createContainerFromTransactions(this.txns, 'all', this.id);
+  const el = $('#' + this.id);
   if (el.length === 0) {
     insertContainer($(this.elementQuery), ElementLocation.BEFORE, container);
   } else {
@@ -75,7 +75,7 @@ const transactionPdfRe = new RegExp(
     'app/legacy_quarterly_statements/\\d+' +
     '|' +
     'app/transaction_documents/\\d+');
-var transactionParser = new pdfparser.BettermentPdfArrayParser();
+const transactionParser = new pdfparser.BettermentPdfArrayParser();
 
 // Global variable for options
 const OUTPUT_FORMATS = [];
@@ -110,23 +110,23 @@ function handleNewAnchors(summaries) {
   // before. This means we are assuming that we don't expect anchors to be
   // added, instead when the user selects a new date range, that every PDF
   // shown will be re-added to the DOM.
-  let summaryTracker = new SummaryTracker('betterment-csv-chrome-combined');
+  const summaryTracker = new SummaryTracker('betterment-csv-chrome-combined');
 
-  var anchorSummaries = summaries[0];
+  const anchorSummaries = summaries[0];
 
   anchorSummaries.added.forEach(function(anchorEl) {
-    var pdfUrl = anchorEl.href;
+    const pdfUrl = anchorEl.href;
 
     if (transactionPdfRe.test(pdfUrl)) {
       pdfToTextArray(pdfUrl).then(function(textArray) {
-        var transactions = transactionParser.parse(textArray);
+        const transactions = transactionParser.parse(textArray);
 
         if (ADD_COMBINED_OUTPUT) {
           summaryTracker.appendTxns(transactions);
         }
 
         getFilenamePromise(pdfUrl).then(function(filename) {
-          let container =
+          const container =
               createContainerFromTransactions(transactions, filename);
           insertContainer($(anchorEl), ElementLocation.BEFORE, container);
         });
@@ -137,22 +137,21 @@ function handleNewAnchors(summaries) {
 
 // Returns a plain DOM element
 function createContainerFromTransactions(transactions, filename, id) {
-  let files = createDownloadFiles(transactions, filename);
+  const files = createDownloadFiles(transactions, filename);
   return createDownloadContainer(files, id);
 }
 
 function createDownloadFiles(transactions, filename) {
-  let files = [];
+  const files = [];
 
   OUTPUT_FORMATS.forEach(function(format) {
-    let data;
     if (format === OutputFormat.CSV) {
-      let data = TransactionConverter.toCsv(transactions);
-      let file = DataFile.makeCsv(filename, data);
+      const data = TransactionConverter.toCsv(transactions);
+      const file = DataFile.makeCsv(filename, data);
       files.push(file);
     } else if (format === OutputFormat.QIF) {
-      let data = TransactionConverter.toQif(transactions);
-      let file = DataFile.makeQif(filename, data);
+      const data = TransactionConverter.toQif(transactions);
+      const file = DataFile.makeQif(filename, data);
       files.push(file);
     }
   });
@@ -177,8 +176,8 @@ function getFilenamePromise(pdfUrl) {
     $.ajax({url: pdfUrl}).done(function(data, textStatus, jqXHR) {
       // content-disposition: attachment;
       // filename="Betterment_401k_Quarterly_Statement_2015-12-31.pdf"
-      var contentDisposition = jqXHR.getResponseHeader('content-disposition');
-      var found = contentDisposition.match(/filename="(.*?)"/);
+      const contentDisposition = jqXHR.getResponseHeader('content-disposition');
+      const found = contentDisposition.match(/filename="(.*?)"/);
       resolve(found[1]);
     });
   });
@@ -186,10 +185,10 @@ function getFilenamePromise(pdfUrl) {
 
 // Returns a plain DOM element
 function createDataUrl(file, id) {
-  let blob = new Blob([file.data], {type: file.mimeType, endings: 'native'});
-  let blobUrl = window.URL.createObjectURL(blob);
+  const blob = new Blob([file.data], {type: file.mimeType, endings: 'native'});
+  const blobUrl = window.URL.createObjectURL(blob);
 
-  let a = document.createElement('a');
+  const a = document.createElement('a');
   a.href = blobUrl;
   a.download = file.name + file.extension;
   a.textContent = file.extension;
@@ -207,7 +206,7 @@ function createDataUrl(file, id) {
 // Returns a <span> el containing blob download links to the given files.
 // Order of the files determines the order of the links.
 function createDownloadContainer(files, id) {
-  let span = document.createElement('span');
+  const span = document.createElement('span');
 
   if (typeof id !== 'undefined') {
     span.id = id;
