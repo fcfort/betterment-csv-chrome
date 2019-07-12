@@ -41,6 +41,7 @@
     "jquery": ">3.4.0",
     "mutation-summary": "0.1.1",
     "node-ensure": "0.0.0",
+    "papaparse": "^5.0.0",
     "pdfjs-dist": "1.8.188",
     "requirejs": "^2.3.5",
     "underscore": "^1.8.3",
