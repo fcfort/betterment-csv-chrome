@@ -184,21 +184,16 @@ function getFilenamePromise(pdfUrl) {
 }
 
 // Returns a plain DOM element
-function createDataUrl(file, id) {
-  const blob = new Blob([file.data], {type: file.mimeType, endings: 'native'});
-  const blobUrl = window.URL.createObjectURL(blob);
-
+function createDataUrl(file) {
   const a = document.createElement('a');
-  a.href = blobUrl;
+
+  const blob = new Blob([file.data], {type: file.mimeType, endings: 'native'});
+  a.href = window.URL.createObjectURL(blob);
   a.download = file.name + file.extension;
   a.textContent = file.extension;
   a.style = 'font-size: 12px; padding-right: 2px';
   // Hack so that this a tag doesn't make the row disappear.
   a.setAttribute('data-no-toggle', 'true');
-
-  if (typeof id !== 'undefined') {
-    a.id = id;
-  }
 
   return a;
 }
@@ -208,9 +203,7 @@ function createDataUrl(file, id) {
 function createDownloadContainer(files, id) {
   const span = document.createElement('span');
 
-  if (typeof id !== 'undefined') {
-    span.id = id;
-  }
+  span.id = id;
 
   files.forEach(function(file) {
     span.appendChild(createDataUrl(file));
