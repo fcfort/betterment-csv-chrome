@@ -20,6 +20,7 @@ This extension can output in both CSV and QIF formats.
 
 ## Dev Setup
 
+-   Install Chrome (used for PDF tests)
 -   Run `sudo apt install npm node-grunt-cli`
 -   Run `grunt install`
 
