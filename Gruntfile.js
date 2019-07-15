@@ -33,7 +33,7 @@ module.exports = function(grunt) {
       options: {configFile: 'karma.conf.js'},
       // WSL-specific hacks
       wsl: {browsers: ['Chrome_for_WSL']},
-      linux: {browsers: ['Chrome']},
+      linux: {browsers: ['ChromeHeadless']},
     },
     clean: {
       options: {'force': true},
