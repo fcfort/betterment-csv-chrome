@@ -62,7 +62,7 @@ module.exports = function(grunt) {
             expand: true,
             flatten: true,
             src: ['app/images/*', 'app/src/options.*'],
-            dest: 'dist/app/'
+            dest: 'dist/app/',
           },
         ],
       },
@@ -72,7 +72,7 @@ module.exports = function(grunt) {
             expand: true,
             flatten: true,
             src: testPdfDir + '/**/*.pdf*',
-            dest: 'test/karma/build'
+            dest: 'test/karma/build',
           },
         ],
       },
@@ -84,18 +84,9 @@ module.exports = function(grunt) {
           'node-ensure',
         ]
       },
-      main: {
-        src: 'app/src/pdf-to-csv.js',
-        dest: 'dist/app/main.js',
-      },
-      worker_path: {
-        src: 'app/src/load-pdf.js',
-        dest: 'dist/app/load-pdf.js',
-      },
-      worker: {
-        src: 'app/src/pdf.worker.js',
-        dest: 'dist/app/pdf.worker.js',
-      },
+      main: {src: 'app/src/pdf-to-csv.js', dest: 'dist/app/main.js'},
+      worker_path: {src: 'app/src/load-pdf.js', dest: 'dist/app/load-pdf.js'},
+      worker: {src: 'app/src/pdf.worker.js', dest: 'dist/app/pdf.worker.js'},
       karma: {
         src: 'test/karma/pdf-to-csv-spec.js',
         dest: 'test/karma/build/karma-spec.js'
@@ -115,7 +106,7 @@ module.exports = function(grunt) {
     crx: {
       extension: {
         'src': ['dist/app/*'],
-        'dest': 'dist/builds/<%= pkg.name %>-<%= pkg.version %>.zip',
+        'dest': 'dist/builds/<%= pkg.name %>-<%= pkg.version %>.zip'
       }
     },
     dalek: {
