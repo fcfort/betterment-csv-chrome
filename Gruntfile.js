@@ -39,7 +39,6 @@ module.exports = function(grunt) {
       options: {'force': true},
       dist: ['dist/app/'],
       karma: ['test/karma/build/'],
-      crx: ['dist/builds/*.crx'],
     },
     concat: {
       options: {separator: ';'},
@@ -83,7 +82,7 @@ module.exports = function(grunt) {
         ignore: [
           'entry?name=[hash]-worker.js!./pdf.worker.js',
           'node-ensure',
-        ],
+        ]
       },
       main: {
         src: 'app/src/pdf-to-csv.js',
@@ -110,15 +109,6 @@ module.exports = function(grunt) {
           'dist/app/main.js': ['dist/app/main.js'],
           'dist/app/icon.js': ['dist/app/icon.js'],
           'dist/app/options.js': ['dist/app/options.js'],
-        }
-      }
-    },
-    imagemin: {
-      dist: {
-        options: {optimizationLevel: 3},
-        files: {
-          'dist/app/icon38.png': 'app/images/icon38.png',
-          'dist/app/icon128.png': 'app/images/icon128.png',
         }
       }
     },
@@ -179,20 +169,22 @@ module.exports = function(grunt) {
     },
   });
 
-  grunt.loadNpmTasks('grunt-browserify');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-imagemin');
-  grunt.loadNpmTasks('grunt-contrib-jasmine');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-crx');
-  grunt.loadNpmTasks('grunt-karma');
-  grunt.loadNpmTasks('grunt-mocha-test');
-  grunt.loadNpmTasks('grunt-newer');
-  grunt.loadNpmTasks('grunt-replace-regex');
-  grunt.loadNpmTasks('grunt-trimtrailingspaces');
-  grunt.loadNpmTasks('grunt-webstore-upload');
+  ['grunt-browserify',
+   'grunt-contrib-clean',
+   'grunt-contrib-concat',
+   'grunt-contrib-copy',
+   'grunt-contrib-jasmine',
+   'grunt-contrib-uglify',
+   'grunt-crx',
+   'grunt-karma',
+   'grunt-mocha-test',
+   'grunt-newer',
+   'grunt-replace-regex',
+   'grunt-trimtrailingspaces',
+   'grunt-webstore-upload',
+  ].forEach((npmTask) => {
+    grunt.loadNpmTasks(npmTask);
+  });
 
   // Platform specific registrations
   // https://stackoverflow.com/a/32586729/2825055,
@@ -217,7 +209,6 @@ module.exports = function(grunt) {
       [].concat(
           'build', 'mochaTest', 'clean:karma', 'copy:karma', 'browserify:karma',
           'unittests'));
-  grunt.registerTask(
-      'package', [].concat('test', 'copy:dist', 'crx', 'clean:crx'));
+  grunt.registerTask('package', [].concat('test', 'copy:dist', 'crx'));
   grunt.registerTask('upload', [].concat('package', 'webstore_upload'));
 };
