@@ -24,6 +24,7 @@
     "grunt-mocha-test": "^0.13.3",
     "grunt-newer": "^1.1.2",
     "grunt-replace-regex": "^1.0.3",
+    "grunt-run": "^0.8.1",
     "grunt-trimtrailingspaces": "^2.3.1",
     "grunt-webstore-upload": "^0.9.24",
     "is-wsl": "^2.1.0",
@@ -42,7 +43,7 @@
     "mutation-summary": "0.1.1",
     "node-ensure": "0.0.0",
     "papaparse": "^5.0.0",
-    "pdfjs-dist": "1.8.188",
+    "pdfjs-dist": "^2.1.266",
     "requirejs": "^2.3.5",
     "underscore": "^1.8.3",
     "webpack": "^4.15.1"

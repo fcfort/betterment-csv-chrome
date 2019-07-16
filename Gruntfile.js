@@ -10,10 +10,10 @@ module.exports = function(grunt) {
   }
 
   // Set pdf test file dir
-  var testPdfDir = {};
-  if (grunt.option('testPdfDir')) {
-    testPdfDir = grunt.option('testPdfDir');
-  }
+  var testPdfDir = grunt.option('testPdfDir') || {};
+
+  // For reading a single PDF.
+  var testPdf = grunt.option('testPdf') || '';
 
   // Project configuration.
   grunt.initConfig({
@@ -167,6 +167,12 @@ module.exports = function(grunt) {
         }
       }
     },
+    run: {
+      dump_pdf: {
+        cmd: 'node',
+        args: ['test/tools/dump_pdf_data.js', testPdf],
+      },
+    }
   });
 
   ['grunt-browserify',
@@ -180,6 +186,7 @@ module.exports = function(grunt) {
    'grunt-mocha-test',
    'grunt-newer',
    'grunt-replace-regex',
+   'grunt-run',
    'grunt-trimtrailingspaces',
    'grunt-webstore-upload',
   ].forEach((npmTask) => {
