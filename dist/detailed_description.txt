@@ -1,6 +1,6 @@
-Adds a download link next to each PDF statement on the Activity page with the ticket-level transaction data for easy exporting to your favorite financial software.
+Adds a download link next to each PDF statement on the Activity page with the ticker-level transaction data for easy exporting to your favorite financial software.
 
-There is support for exporting as CSV, QIF (Quicken format), and for a combined download of all PDFs on the Activity page.
+There is support for exporting as CSV, QIF (Quicken format), and for a combined download for all PDFs on the Activity page.
 
 Betterment is a wonderful brokerage service, but doesn't provide ticker-level transaction data for easy export. But, this data is available via the PDFs on the Activity page.
 
