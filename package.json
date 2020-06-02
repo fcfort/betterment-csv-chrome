@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "bootstrap": "^3.4.1",
-    "jquery": ">3.4.0",
+    "jquery": ">3.5.0",
     "mutation-summary": "0.1.1",
     "node-ensure": "0.0.0",
     "papaparse": "^5.0.0",
