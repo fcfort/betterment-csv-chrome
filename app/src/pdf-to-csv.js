@@ -55,6 +55,9 @@ var SummaryTracker = function(id) {
 
 SummaryTracker.prototype.appendTxns = function(txns) {
   this.txns.push.apply(this.txns, txns);
+};
+
+SummaryTracker.prototype.writeTxns = function() {
   const container = createContainerFromTransactions(this.txns, 'all', this.id);
   const el = $('#' + this.id);
   if (el.length === 0) {
@@ -80,6 +83,7 @@ const transactionParser = new pdfparser.BettermentPdfArrayParser();
 // Global variable for options
 const OUTPUT_FORMATS = [];
 var ADD_COMBINED_OUTPUT = false;
+const TRANSACTION_CACHE = {};
 
 // Async call to get options
 chrome.storage.sync.get(
@@ -104,35 +108,94 @@ chrome.storage.sync.get(
           {callback: handleNewAnchors, queries: [{element: 'a[href]'}]});
     });
 
+// Creates new download links for the transactions contained in each PDF within
+// the current activity page. Also creates the combined output download link
+// that holds all transactions for every PDF within the current page.
+//
+// The key optimizations here are:
+//
+//   1. Returns if no new PDF URLs have been added. This is needed because the
+//      download links that are added by this function triggers this callback
+//      again unnecessarily.
+//   2. Caches the parsing of the PDFs using their URL as the key. This is so
+//      when the page changes we don't have to redownload and reparse the PDFs.
+//   3. The combined output queries the entire page rather than relying upon
+//      the mutation summaries provided by the MutationSummary library. This is
+//      so we don't have to track state about which transactions are present
+//      within the combined output.
+//   4. De-dupe URLs in combined output, since each PDF URL appears twice on
+//      the page.
 function handleNewAnchors(summaries) {
-  // Here we make the assumption that whenever the anchors change on the page
-  // that we are free to blow away whatever transactions were being stored
-  // before. This means we are assuming that we don't expect anchors to be
-  // added, instead when the user selects a new date range, that every PDF
-  // shown will be re-added to the DOM.
-  const summaryTracker = new SummaryTracker('betterment-csv-chrome-combined');
+  // Return early if there are no PDFs to parse.
 
-  const anchorSummaries = summaries[0];
+  const addedAnchors = summaries[0].added;
 
-  anchorSummaries.added.forEach(function(anchorEl) {
-    const pdfUrl = anchorEl.href;
+  const noPdfUrls = addedAnchors.every(function(anchorEl) {
+    return !transactionPdfRe.test(anchorEl.href);
+  });
 
-    if (transactionPdfRe.test(pdfUrl)) {
-      pdfToTextArray(pdfUrl).then(function(textArray) {
-        const transactions = transactionParser.parse(textArray);
+  if (noPdfUrls) {
+    return;
+  }
 
-        if (ADD_COMBINED_OUTPUT) {
-          summaryTracker.appendTxns(transactions);
-        }
+  // Handle per-PDF transaction files.
 
-        getFilenamePromise(pdfUrl).then(function(filename) {
+  const perPdfPromises = [];
+
+  addedAnchors.forEach(function(anchorEl) {
+    const url = anchorEl.href;
+
+    if (transactionPdfRe.test(url)) {
+      perPdfPromises.push(getTransactionsForUrl(url).then(function(transactions) {
+        getFilenamePromise(url).then(function(filename) {
           const container =
               createContainerFromTransactions(transactions, filename);
           insertContainer($(anchorEl), ElementLocation.BEFORE, container);
         });
-      });
+      }));
     }
   });
+
+  // Now handle combined output
+
+  if (ADD_COMBINED_OUTPUT) {
+    Promise.allSettled(perPdfPromises).then(function () {
+      const summaryTracker = new SummaryTracker('betterment-csv-chrome-combined');
+      const combinedOutputPromises = [];
+      // Query all anchors again from the entire document and de-dupe them.
+      const pdfUrlSet = new Set();
+      $("a[href]").each(function () {
+        if (transactionPdfRe.test(this.href)) {
+          pdfUrlSet.add(this.href);
+        }
+      });
+
+      pdfUrlSet.forEach(function (url) {
+        if (transactionPdfRe.test(url)) {
+          combinedOutputPromises.push(getTransactionsForUrl(url).then(function(transactions) {
+            summaryTracker.appendTxns(transactions);
+          }));
+        }
+      });
+      // Populate download file with all txns to bottom of the page
+      Promise.allSettled(combinedOutputPromises).then(function () {
+        summaryTracker.writeTxns();
+      });
+    });
+  }
+}
+
+// Returns Promise, checking in cache first. Expects valid PDF URL.
+function getTransactionsForUrl(url) {
+  if (url in TRANSACTION_CACHE) {
+    return Promise.resolve(TRANSACTION_CACHE[url]);
+  } else {
+    return pdfToTextArray(url).then(function(textArray) {
+      const transactions = transactionParser.parse(textArray);
+      TRANSACTION_CACHE[url] = transactions;
+      return transactions;
+    });
+  }
 }
 
 // Returns a plain DOM element

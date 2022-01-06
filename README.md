@@ -16,13 +16,14 @@ This extension can output in both CSV and QIF formats.
 -   CSV/QIF output formats
 -   Download transactions from all the PDFs on the page as one combined file.
 -   All done entirely client-side. *No data leaves your computer*.
--   Install from the Chrome Web Store [here](https://chrome.google.com/webstore/detail/betterment-pdf-to-csv-exp/jbneodpofmnammepmnejgkacdbjojcgn).
+-   Install from the Chrome Web Store
+    [here](https://chrome.google.com/webstore/detail/betterment-pdf-to-csv-exp/jbneodpofmnammepmnejgkacdbjojcgn).
 
 ## Dev Setup
 
 -   Install Chrome (used for PDF tests)
 -   Run `sudo apt install npm node-grunt-cli`
--   Run `grunt install`
+-   Run `npm install`
 
 ## Building
 
