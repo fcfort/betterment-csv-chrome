@@ -28,7 +28,7 @@
     "grunt-webstore-upload": "^0.9.24",
     "is-wsl": "^2.1.0",
     "jasmine-core": "^2.4.1",
-    "karma": "^4.0.1",
+    "karma": "^6.3.14",
     "karma-chrome-launcher": "^3.0.0",
     "karma-jasmine": "^1.0.2",
     "karma-requirejs": "^1.0.0",
