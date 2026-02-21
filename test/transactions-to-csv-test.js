@@ -18,8 +18,7 @@ describe('Betterment Transaction to CSV converter', function() {
     csv.should.eql(
         'Account,Date,Transaction,Portfolio/Fund,Price,Shares,Value\n' +
         'A,2/3/2016,foo,BAR,1.00,2.45,43.03');
-  });
-
+    });
   it('should quote columns with commas', function() {
     const transactions = [{
       account: 'A',
@@ -35,6 +34,5 @@ describe('Betterment Transaction to CSV converter', function() {
 
     csv.should.eql(
         'Account,Date,Transaction,Portfolio/Fund,Price,Shares,Value\n' +
-        'A,2/3/2016,"foo, bar",_,1,2,3');
-  });
-});
+        'A,2/3/2016,"foo, bar",_,1.00,2,3.00');
+    });});

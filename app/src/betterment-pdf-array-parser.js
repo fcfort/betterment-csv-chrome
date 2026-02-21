@@ -13,9 +13,10 @@ BettermentPdfArrayParser.prototype.parse = function(array) {
   var goal;
   var isDescriptionDone = false;
   var dateAfterTransaction = false; // assume old format (date|txn) until we detect otherwise
-  var is20161111FormatBool = is20161111Format(array);
 
-  if(is20161111Format(array)) {
+  if (is2026Format(array)) {
+    return parse2026Format(array);
+  } else if (is20161111Format(array)) {
     return parse20161111Format(array);
   } else {
     //
@@ -199,6 +200,11 @@ function parseGoal(line, goal) {
     goal = toTitleCase(goalMatch) + ' Goal';
   }
 
+  // Case #5 - New format in 2026
+  if (!goal && line.length === 1 && line[0].match(/^[a-zA-Z ]+ - [a-zA-Z ]+$/)) {
+    goal = line[0];
+  }
+
   return goal;
 }
 
@@ -242,9 +248,10 @@ function getTicker(tickerString) {
 }
 
 
-function createTransaction(goal, date, ticker, descriptionArray, price, amount) {
+function createTransaction(goal, date, ticker, descriptionArray, price, amount, quantity) {
   var priceValue = getCashValue(price);
   var amountValue = getCashValue(amount);
+  var quantityValue = quantity ? quantity : getQuantity(priceValue, amountValue);
 
   return {
     account: goal,
@@ -253,9 +260,10 @@ function createTransaction(goal, date, ticker, descriptionArray, price, amount) 
     ticker: getTicker(ticker),
     price: priceValue,
     amount: amountValue,
-    quantity: getQuantity(priceValue, amountValue),
+    quantity: quantityValue,
   };
 }
+
 
 
 // http://stackoverflow.com/a/196991
@@ -269,7 +277,87 @@ function toTitleCase(str) {
 
 
 function parseBettermentDate(dateStr) {
-  return new Date(dateStr.replace(/(?:th|st|nd|rd)/, ''));
+  if (!dateStr) return null;
+  const yyyymmddRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (yyyymmddRegex.test(dateStr)) {
+    // Append 'T00:00:00Z' to force UTC parsing for YYYY-MM-DD format
+    return new Date(dateStr + 'T00:00:00Z');
+  } else {
+    // Parse other formats in local time
+    return new Date(dateStr.replace(/(?:th|st|nd|rd)/, ''));
+  }
+}
+
+function is2026Format(pdfArray) {
+  return pdfArray.some(line => arraysEqual(["Ticker","Type","Price","Shares","Value"], line));
+}
+
+function parse2026Format(pdfArray) {
+  var transactions = [];
+  var goal = "";
+  var date = "";
+  var inTradesSection = false;
+
+  // Find the date
+  var dailyActivityReportFound = false;
+  for (var i = 0; i < pdfArray.length; i++) {
+    var line = pdfArray[i];
+    if (line.join("").includes("Daily Activity Report")) {
+      dailyActivityReportFound = true;
+    } else if (dailyActivityReportFound && line.length === 1 && line[0].match(/^(\d{4}-\d{2}-\d{2}|\w{3} \d{1,2}, \d{4})$/)) {
+      date = line[0];
+      break; // Stop looking for date
+    }
+  }
+
+  for (var i = 0; i < pdfArray.length; i++) {
+    var line = pdfArray[i];
+
+    // Detect new goal
+    if (line.length === 1 && line[0].match(/^([a-zA-Z ]+ - [a-zA-Z ]+|.*\| Betterment Holdings, Inc\.)$/)) {
+      goal = line[0];
+    }
+
+    if (arraysEqual(["Ticker","Type","Price","Shares","Value"], line)) {
+      inTradesSection = true;
+      continue;
+    }
+
+    if (line.length === 1 && line[0] === "POSITION TRANSFERS") {
+        inTradesSection = false;
+        continue;
+    }
+
+    if (inTradesSection && line.length === 5) {
+      var ticker = line[0];
+      var type = line[1];
+      var price = line[2];
+      var shares = line[3];
+      var amount = line[4];
+
+      // Sell transactions have positive shares in the PDF, but we need them to be negative
+      var quantity = parseFloat(shares);
+      if (type.toLowerCase() === 'sell') {
+        quantity = quantity * -1;
+        let numericAmount = parseFloat(getCashValue(amount));
+        if (numericAmount > 0) {
+          amount = "-" + amount;
+        }
+      }
+
+      transactions.push(createTransaction(
+        goal,
+        date,
+        ticker,
+        [type], // Description
+        price,
+        amount,
+        quantity // Pass shares directly
+      ));
+    }
+  }
+
+  return transactions;
 }
 
 module.exports.BettermentPdfArrayParser = BettermentPdfArrayParser;
