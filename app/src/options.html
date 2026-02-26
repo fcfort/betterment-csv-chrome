@@ -28,7 +28,7 @@
         border-top: none
       }
 
-      #settings {
+      #settings, #combined_downloads {
         padding: 10px;
         color: #222;
       }
@@ -43,6 +43,19 @@
       .checkboxes label span {
         vertical-align: middle;
         padding-left: 2px;
+      }
+      #combined_downloads a {
+        display: inline-block;
+        margin-right: 10px;
+        padding: 5px 10px;
+        background-color: #eee;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        text-decoration: none;
+        color: #333;
+      }
+      #combined_downloads button {
+        padding: 5px 10px;
       }
     </style>
   </head>
@@ -76,14 +89,22 @@
             <div>
             <label for="combined">
               <input type="checkbox" class="saveOnClick" id="combined">
-              <span>Also <b>export all transactions</b> as one file
-                (next to the <i>Download CSV</i> button)
-              </span>
+              <span>Also <b>export all transactions</b> as one file</span>
             </label>
             </div>
           </div>
 
         </form>
+      </div>
+
+      <hr id="hr">
+
+      <div id="combined_downloads">
+        <b>Combined Transactions Download:</b>
+        <div id="combined_links" style="margin-top: 5px;">
+          No combined data available. Visit the Betterment Activity page to generate it.
+        </div>
+        <button id="clear_combined" style="margin-top: 10px;">Clear Combined Data</button>
       </div>
     </div>
 

@@ -57,14 +57,25 @@ SummaryTracker.prototype.appendTxns = function(txns) {
   this.txns.push.apply(this.txns, txns);
 };
 
-SummaryTracker.prototype.writeTxns = function() {
-  const container = createContainerFromTransactions(this.txns, 'all', this.id);
-  const el = $('#' + this.id);
-  if (el.length === 0) {
-    insertContainer($(this.elementQuery), ElementLocation.BEFORE, container);
-  } else {
-    insertContainer(el, ElementLocation.REPLACE, container);
-  }
+SummaryTracker.prototype.storeCombinedTransactions = function() {
+  const files = createDownloadFiles(this.txns, 'betterment-all-transactions');
+  const storageUpdate = {};
+
+  files.forEach(file => {
+    storageUpdate['combined_' + file.extension.substring(1)] = {
+      name: file.name + file.extension,
+      mimetype: file.mimetype,
+      data: file.data // Store raw data string
+    };
+  });
+
+  chrome.storage.local.set(storageUpdate, function() {
+    if (chrome.runtime.lastError) {
+      console.error("Error storing combined transactions:", chrome.runtime.lastError);
+    } else {
+      console.log('Combined transactions stored in local storage.');
+    }
+  });
 };
 
 
@@ -183,7 +194,7 @@ function handleNewAnchors(summaries) {
       });
       // Populate download file with all txns to bottom of the page
       Promise.allSettled(combinedOutputPromises).then(function () {
-        summaryTracker.writeTxns();
+        summaryTracker.storeCombinedTransactions();
       });
     });
   }
