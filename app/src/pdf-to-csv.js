@@ -77,7 +77,9 @@ const transactionPdfRe = new RegExp(
     '|' +
     'app/legacy_quarterly_statements/\\d+' +
     '|' +
-    'app/transaction_documents/\\d+');
+    'app/transaction_documents/\\d+' +
+    '|' +
+    'app/activity_reports/\\d+');
 const transactionParser = new pdfparser.BettermentPdfArrayParser();
 
 // Global variable for options
@@ -135,6 +137,7 @@ function handleNewAnchors(summaries) {
   });
 
   if (noPdfUrls) {
+    console.debug("No PDF urls found.")
     return;
   }
 
@@ -146,6 +149,7 @@ function handleNewAnchors(summaries) {
     const url = anchorEl.href;
 
     if (transactionPdfRe.test(url)) {
+      console.log("Found PDF url" + url);
       perPdfPromises.push(getTransactionsForUrl(url).then(function(transactions) {
         getFilenamePromise(url).then(function(filename) {
           const container =
