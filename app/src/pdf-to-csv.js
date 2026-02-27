@@ -8,7 +8,7 @@ var MutationSummary = require('mutation-summary');
 /*
  * ElementLocation
  */
-const ElementLocation = Object.freeze({'BEFORE': 1, 'REPLACE': 2});
+const ElementLocation = Object.freeze({'BEFORE': 1, 'REPLACE': 2, 'AFTER': 3});
 
 
 /*
@@ -49,7 +49,7 @@ DataFile.makeQif = function(name, data) {
  */
 var SummaryTracker = function(id) {
   this.id = id;
-  this.elementQuery = 'a[href^="/app/activity_transactions.csv"]';
+  this.elementQuery = 'div.sc-Card-body:last';
   this.txns = [];
 };
 
@@ -61,8 +61,10 @@ SummaryTracker.prototype.writeTxns = function() {
   const container = createContainerFromTransactions(this.txns, 'all', this.id);
   const el = $('#' + this.id);
   if (el.length === 0) {
-    insertContainer($(this.elementQuery), ElementLocation.BEFORE, container);
+    console.log("Inserting after " + this.elementQuery)
+    insertContainer($(this.elementQuery), ElementLocation.AFTER, container);
   } else {
+    console.log("Replacing container")
     insertContainer(el, ElementLocation.REPLACE, container);
   }
 };
@@ -164,6 +166,7 @@ function handleNewAnchors(summaries) {
 
   if (ADD_COMBINED_OUTPUT) {
     Promise.allSettled(perPdfPromises).then(function () {
+      console.log("All PDF promises have settled, creating combined output link")
       const summaryTracker = new SummaryTracker('betterment-csv-chrome-combined');
       const combinedOutputPromises = [];
       // Query all anchors again from the entire document and de-dupe them.
@@ -183,6 +186,7 @@ function handleNewAnchors(summaries) {
       });
       // Populate download file with all txns to bottom of the page
       Promise.allSettled(combinedOutputPromises).then(function () {
+        console.log("Adding combined txn link to page")
         summaryTracker.writeTxns();
       });
     });
@@ -232,6 +236,8 @@ function insertContainer(elPos, elLoc, container) {
     elPos.before(container);
   } else if (elLoc === ElementLocation.REPLACE) {
     elPos.replaceWith(container);
+  } else if (elLoc === ElementLocation.AFTER) {
+    elPos.after(container);
   }
 }
 
@@ -271,6 +277,7 @@ function createDownloadContainer(files, id) {
   const span = document.createElement('span');
 
   span.id = id;
+  span.classList.add('betterment-csv-chrome-per-pdf');
 
   files.forEach(function(file) {
     span.appendChild(createDataUrl(file));
