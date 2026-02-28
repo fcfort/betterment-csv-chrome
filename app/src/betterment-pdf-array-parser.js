@@ -15,10 +15,13 @@ BettermentPdfArrayParser.prototype.parse = function(array) {
   var dateAfterTransaction = false; // assume old format (date|txn) until we detect otherwise
 
   if (is2026Format(array)) {
+    console.debug("Parsing PDF using 2026 format logic")
     return parse2026Format(array);
   } else if (is20161111Format(array)) {
+    console.debug("Parsing PDF using 2016 format logic")
     return parse20161111Format(array);
   } else {
+    console.debug("Parsing PDF using pre-2016 format logic")
     //
     // Old format
     //
@@ -260,7 +263,7 @@ function createTransaction(goal, date, ticker, descriptionArray, price, amount, 
     ticker: getTicker(ticker),
     price: priceValue,
     amount: amountValue,
-    quantity: quantityValue,
+    quantity: parseFloat(quantityValue).toFixed(6),
   };
 }
 
@@ -294,28 +297,44 @@ function is2026Format(pdfArray) {
 
 function parse2026Format(pdfArray) {
   var transactions = [];
-  var goal = "";
+  var lastGoalFound = "";
   var date = "";
   var inTradesSection = false;
 
-  // Find the date
-  var dailyActivityReportFound = false;
+  // Find the date anywhere in the array
   for (var i = 0; i < pdfArray.length; i++) {
     var line = pdfArray[i];
-    if (line.join("").includes("Daily Activity Report")) {
-      dailyActivityReportFound = true;
-    } else if (dailyActivityReportFound && line.length === 1 && line[0].match(/^(\d{4}-\d{2}-\d{2}|\w{3} \d{1,2}, \d{4})$/)) {
+    if (line.length === 1 && line[0].match(/^\d{4}-\d{2}-\d{2}$/)) {
       date = line[0];
-      break; // Stop looking for date
+      break;
     }
   }
 
   for (var i = 0; i < pdfArray.length; i++) {
     var line = pdfArray[i];
 
-    // Detect new goal
-    if (line.length === 1 && line[0].match(/^([a-zA-Z ]+ - [a-zA-Z ]+|.*\| Betterment Holdings, Inc\.)$/)) {
-      goal = line[0];
+    // Match account names - single element lines that aren't known headers or dates
+    if (line.length === 1) {
+      var content = line[0];
+      if (!content.match(/^\d{4}-\d{2}-\d{2}$/) && // Not a date
+          !content.match(/^\d+$/) && // Not a page number
+          content !== "TRADES" &&
+          content !== "POSITION TRANSFERS" &&
+          content !== "Ticker" &&
+          content !== "Type" &&
+          content !== "Price" &&
+          content !== "Shares" &&
+          content !== "Value" &&
+          content !== "ACCOUNT HOLDER" &&
+          content !== "IN THIS DOCUMENT" &&
+          content !== "Daily Activity Details" &&
+          content !== "Betterment" &&
+          !content.match(/^Account #/) &&
+          !content.match(/^[A-Z ]+ \(ACCT # \d+\)$/) &&
+          !content.endsWith("Goal") &&
+          content.trim() !== "") {
+         lastGoalFound = content;
+      }
     }
 
     if (arraysEqual(["Ticker","Type","Price","Shares","Value"], line)) {
@@ -346,8 +365,8 @@ function parse2026Format(pdfArray) {
       }
 
       transactions.push(createTransaction(
-        goal,
-        date,
+        lastGoalFound,
+        date, // Use the single date found
         ticker,
         [type], // Description
         price,
