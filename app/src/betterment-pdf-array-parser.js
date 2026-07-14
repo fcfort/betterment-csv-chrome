@@ -234,7 +234,7 @@ function getQuantity(price, amount) {
 
 
 function getCashValue(dollarAmountString) {
-  return dollarAmountString.replace('$','').replace(',','');
+  return dollarAmountString.replace(/\$/g, '').replace(/,/g, '').trim();
 }
 
 
@@ -337,14 +337,18 @@ function parse2026Format(pdfArray) {
       }
     }
 
-    if (arraysEqual(["Ticker","Type","Price","Shares","Value"], line)) {
+    if (line.length === 1 && line[0] === "TRADES") {
       inTradesSection = true;
       continue;
     }
 
-    if (line.length === 1 && line[0] === "POSITION TRANSFERS") {
-        inTradesSection = false;
-        continue;
+    if (line.length === 1 && (
+        line[0] === "POSITION TRANSFERS" ||
+        line[0] === "THE FINE PRINT" ||
+        line[0] === "ACCOUNT HOLDER" ||
+        line[0] === "IN THIS DOCUMENT")) {
+      inTradesSection = false;
+      continue;
     }
 
     if (inTradesSection && line.length === 5) {
@@ -354,25 +358,27 @@ function parse2026Format(pdfArray) {
       var shares = line[3];
       var amount = line[4];
 
-      // Sell transactions have positive shares in the PDF, but we need them to be negative
-      var quantity = parseFloat(shares);
-      if (type.toLowerCase() === 'sell') {
-        quantity = quantity * -1;
-        let numericAmount = parseFloat(getCashValue(amount));
-        if (numericAmount > 0) {
-          amount = "-" + amount;
+      if (type.toLowerCase() === 'buy' || type.toLowerCase() === 'sell') {
+        // Sell transactions have positive shares in the PDF, but we need them to be negative
+        var quantity = parseFloat(getCashValue(shares));
+        if (type.toLowerCase() === 'sell') {
+          quantity = quantity * -1;
+          let numericAmount = parseFloat(getCashValue(amount));
+          if (numericAmount > 0) {
+            amount = "-" + amount;
+          }
         }
-      }
 
-      transactions.push(createTransaction(
-        lastGoalFound,
-        date, // Use the single date found
-        ticker,
-        [type], // Description
-        price,
-        amount,
-        quantity // Pass shares directly
-      ));
+        transactions.push(createTransaction(
+          lastGoalFound,
+          date, // Use the single date found
+          ticker,
+          [type], // Description
+          price,
+          amount,
+          quantity // Pass shares directly
+        ));
+      }
     }
   }
 
